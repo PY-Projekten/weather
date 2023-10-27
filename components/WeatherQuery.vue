@@ -1,25 +1,25 @@
-
 <!-- <template>
   <div>
     <h1>Weather Query</h1>
 
- 
+
       <div>
         <label for="location">Location:</label>
         <v-autocomplete
-        ref="tt"
-        @keydown.enter="show_model"
-       
-        :search-input.sync="searchInput"
-          outlined
-          :items="locationsList" 
+          ref="autocomplete"
           v-model="location"
-         
-          taggable 
+          :items="locationsList"
+          @input="handleInput"
+          @blur="show_model"
+          @focus="handleFocus"
+          @keydown.enter="show_model"
+          @keydown.tab="show_model"
+          :search-input.sync="searchInput"
+          taggable
           placeholder="Select or type a location"
           >
           <template v-slot:no-data>
-            Test
+            Data does not yet exist in List.  If you have entered in a new Location, press ENTER
           </template>
         </v-autocomplete>
       </div>
@@ -38,12 +38,12 @@
           </option>
         </select> -->
         <!-- <input type="number" v-model="hour" /> -->
-    <!--   </div>
+<!--       </div>
 
       <v-btn type="submit" @click="submitForm">Query</v-btn> -->
-   
-    
-    <!-- <div v-if="response_data.length">
+
+
+<!--     <div v-if="response_data.length">
       <h2>Results:</h2>
       <table>
         <thead>
@@ -62,9 +62,9 @@
           </tr>
         </tbody>
       </table>
-    </div> -->
+    </div>
 
-   <!--  <div v-else>
+    <div v-else>
       <p>No results found.</p>
     </div>
     <template>
@@ -81,7 +81,7 @@
         </v-card>
         <v-card-actions>
           <v-spacer/>
-          <v-btn>Abbrechen</v-btn>
+          <v-btn @click="dialog=false">Abbrechen</v-btn>
           <v-btn @click="submitForm">Speichern</v-btn>
         </v-card-actions>
       </v-dialog>
@@ -111,6 +111,23 @@ export default {
     };
   },
   methods: {
+    handleInput(value) {
+      this.searchInput = value; // Update the searchInput with the new value
+      // You might want to clear the input if a valid location is selected from the suggestions
+      if (this.locationsList.includes(value)) {
+        this.searchInput = '';
+      }
+    },
+    handleBlur() {
+      // Logic to retain the typed input on blur
+
+    },
+    handleFocus() {
+      // Logic to manage the input on focus
+      // Clear any previous selection or error message to prepare for new input
+      this.selectedLocation = null;
+      this.errorMessage = '';
+    },
     noDataResult() {
       console.log('test')
        // Your custom function here, e.g., fetching new locations
@@ -128,24 +145,25 @@ export default {
       } catch (error) {
         console.error('An error occurred while fetching the locations:', error);
       }
-    }, 
+    },
     async submitForm() {
+      this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
       try {
           // Define the URL of your Django backend endpoint
           const url = 'http://127.0.0.1:8000/api/v1/weather_query/';
-          
+
           // Define the data to be sent in the POST request
           const postData = {
               location: this.location,
               date: this.date,
               hour: this.hour
           };
-          
+
           // Make a POST request to the Django backend
           const response = await axios.post(url, postData);
           console.log("Response from backend", response);
-          
+
           // Check if the response indicates success
           if (response.data.status == "success") {
               // Update the data in the Vue component with the received data
@@ -157,16 +175,23 @@ export default {
       } catch (error) {
           // Handle network errors or other issues with the request
           console.error(error);
-          
+
       }
     },
     show_model(){
       console.log("----------------------------------------",this.$refs.tt)
       console.log("----------------------------------------",this.searchInput)
-      this.location = this.searchInput
-      this.dialog = true
+
+      if(!this.locationsList.includes(this.searchInput)){
+        this.dialog = true
+        this.location = this.searchInput
+      }else{
+        this.location = this.searchInput
+        this.submitForm()
+      }
+
     }
-  }, 
+  },
   created() {
   this.fetchLocations();
   },
@@ -181,15 +206,14 @@ export default {
 
 
 
-
-
-
+<!-- ***Version Axiom-Plugin: HTTP Request*** -->
 
 <template>
   <div>
     <h1>Weather Query</h1>
 
- 
+      <span>My Test: {{ my_test }}</span> <br>
+      <span>Test: {{ test }}</span>
       <div>
         <label for="location">Location:</label>
         <v-autocomplete
@@ -202,7 +226,7 @@ export default {
           @keydown.enter="show_model"
           @keydown.tab="show_model"
           :search-input.sync="searchInput"
-          taggable 
+          taggable
           placeholder="Select or type a location"
           >
           <template v-slot:no-data>
@@ -228,8 +252,8 @@ export default {
       </div>
 
       <v-btn type="submit" @click="submitForm">Query</v-btn>
-   
-    
+
+
     <div v-if="response_data.length">
       <h2>Results:</h2>
       <table>
@@ -277,13 +301,17 @@ export default {
 </template>
 
 <script>
-import axios from "axios"
+//import axios from "axios"
 import { VAutocomplete } from "vuetify/lib";
 //import vSelect from "vue-select";
 
 export default {
   components: {
     //VAutocomplete
+},
+props: {
+  test: Number,
+  set_test: Function
 },
   data() {
     return {
@@ -297,15 +325,23 @@ export default {
 /*       noDataResult: true */
     };
   },
+  computed: {
+    my_test: {
+      get(){
+        return this.test
+      }
+    }
+  },
   methods: {
     handleInput(value) {
       this.searchInput = value; // Update the searchInput with the new value
       // You might want to clear the input if a valid location is selected from the suggestions
       if (this.locationsList.includes(value)) {
         this.searchInput = '';
-      } 
+      }
     },
     handleBlur() {
+
       // Logic to retain the typed input on blur
 
     },
@@ -327,30 +363,27 @@ export default {
     },
     async fetchLocations() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/v1/available_locations/');
+        const response = await this.$axios.get('/available_locations/');
         this.locationsList = response.data.locations;
       } catch (error) {
         console.error('An error occurred while fetching the locations:', error);
       }
-    }, 
+    },
     async submitForm() {
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
       try {
-          // Define the URL of your Django backend endpoint
-          const url = 'http://127.0.0.1:8000/api/v1/weather_query/';
-          
           // Define the data to be sent in the POST request
           const postData = {
               location: this.location,
               date: this.date,
               hour: this.hour
           };
-          
+
           // Make a POST request to the Django backend
-          const response = await axios.post(url, postData);
+          const response = await this.$axios.post('/weather_query/', postData);
           console.log("Response from backend", response);
-          
+
           // Check if the response indicates success
           if (response.data.status == "success") {
               // Update the data in the Vue component with the received data
@@ -362,13 +395,13 @@ export default {
       } catch (error) {
           // Handle network errors or other issues with the request
           console.error(error);
-          
+
       }
     },
     show_model(){
       console.log("----------------------------------------",this.$refs.tt)
       console.log("----------------------------------------",this.searchInput)
-      
+
       if(!this.locationsList.includes(this.searchInput)){
         this.dialog = true
         this.location = this.searchInput
@@ -376,19 +409,25 @@ export default {
         this.location = this.searchInput
         this.submitForm()
       }
-     
     }
-  }, 
-  created() {
-  this.fetchLocations();
   },
+  created() {
+    this.set_test(1)
+  this.fetchLocations();
+  console.log("created")
+  },
+  watch: {
+    location(oldVal, newVal){
+      if (oldVal !== newVal) console.log("Value has changed ...")
+    }
+  }
+/*   mounted() {
+    console.log("mounted")
+  },  */
 };
 </script>
 
 <style scoped>
 /* Add your CSS styles here */
 </style>
-
-
-
 
