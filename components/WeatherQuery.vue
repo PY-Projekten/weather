@@ -311,7 +311,10 @@ export default {
 },
 props: {
   test: Number,
-  set_test: Function
+  set_test: {
+    type: Function,
+    default: () => {}
+  }
 },
   data() {
     return {
@@ -416,7 +419,7 @@ props: {
   this.fetchLocations();
   console.log("created")
   },
-  
+
   watch: {
     location(newVal, oldVal) {
       // Check if the location has changed
