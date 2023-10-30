@@ -416,18 +416,30 @@ props: {
   this.fetchLocations();
   console.log("created")
   },
+  
   watch: {
-    location(oldVal, newVal){
-      if (oldVal !== newVal) console.log("Value has changed ...")
+    location(newVal, oldVal) {
+      // Check if the location has changed
+      if (newVal !== oldVal && newVal) {
+        // Check if the location is in the locationsList and other fields are filled
+        if (this.locationsList.includes(newVal) && this.date && this.hour) {
+          // Trigger the weather query
+          this.submitForm();
+        }
+      }
     }
   }
-/*   mounted() {
-    console.log("mounted")
-  },  */
+
+  /*   mounted() {
+      console.log("mounted")
+    },  */
 };
 </script>
 
 <style scoped>
 /* Add your CSS styles here */
 </style>
+
+
+
 
