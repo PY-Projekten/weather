@@ -326,6 +326,7 @@ props: {
       locationsList: [], // populate this list from your API
       response_data: [], // populate this with the query results from your API
 /*       noDataResult: true */
+      errorMessage: ''
     };
   },
   computed: {
@@ -372,32 +373,74 @@ props: {
         console.error('An error occurred while fetching the locations:', error);
       }
     },
+    // async submitForm() {
+    //   this.response_data = []
+    //   console.log("form data:", this.location, this.date, this.hour);
+    //   try {
+    //       // Define the data to be sent in the POST request
+    //       const postData = {
+    //           location: this.location,
+    //           date: this.date,
+    //           hour: this.hour
+    //       };
+    //
+    //       // Make a POST request to the Django backend
+    //       const response = await this.$axios.post('/weather_query/', postData);
+    //       console.log("Response from backend", response);
+    //
+    //       // Check if the response indicates success
+    //       if (response.data.status == "success") {
+    //           // Update the data in the Vue component with the received data
+    //           this.response_data = response.data.data;
+    //       } else {
+    //           // Handle the case where the backend response indicates an error
+    //           console.error(response.data.message);
+    //       }
+    //   } catch (error) {
+    //       // Handle network errors or other issues with the request
+    //       console.error(error);
+    //
+    //   }
+    // },
     async submitForm() {
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
       try {
-          // Define the data to be sent in the POST request
-          const postData = {
-              location: this.location,
-              date: this.date,
-              hour: this.hour
-          };
+        // Define the data to be sent in the POST request
+        const postData = {
+          location: this.location,
+          date: this.date,
+          hour: this.hour
+        };
 
-          // Make a POST request to the Django backend
-          const response = await this.$axios.post('/weather_query/', postData);
-          console.log("Response from backend", response);
+        // Make a POST request to the Django backend
+        const response = await this.$axios.post('/weather_query/', postData);
+        console.log("Response from backend", response);
 
-          // Check if the response indicates success
-          if (response.data.status == "success") {
-              // Update the data in the Vue component with the received data
-              this.response_data = response.data.data;
-          } else {
-              // Handle the case where the backend response indicates an error
-              console.error(response.data.message);
-          }
+        // Check if the response indicates success
+        if (response.data.status === "success") {
+          // Update the data in the Vue component with the received data
+          this.response_data = response.data.data;
+        } else {
+          // Handle the case where the backend response indicates an error
+          this.errorMessage = response.data.message; // Display the error message from the backend
+          console.error(response.data.message);
+        }
       } catch (error) {
-          // Handle network errors or other issues with the request
-          console.error(error);
+        // Handle errors or other issues with the request
+        if (error.response) {
+          this.errorMessage = error.response.data.message; //Display the custom message from the backend
+          console.error('Error:', error.response.data.message);
+        } else if (error.request) {
+          // The request was made but no response was received
+          this.errorMessage = 'No response from the server';
+          console.error('Error: No response from the server');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          this.errorMessage = 'Error setting up the request';
+          console.error('Error:', error.message)
+        }
+
 
       }
     },
