@@ -419,6 +419,7 @@ export default {
     },
 
     async submitForm() {
+      console.log('submitForm is triggered');
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
       try {
