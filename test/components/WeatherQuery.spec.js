@@ -3,11 +3,50 @@ import Vuetify from 'vuetify';
 import { createLocalVue, mount } from '@vue/test-utils';
 import WeatherQuery from '@/components/WeatherQuery.vue';
 import { shallowMount } from '@vue/test-utils';
+import axios from 'axios';
+
+
+
+jest.mock('axios', () => ({
+    create: () => ({
+        post: jest.fn(() => Promise.resolve({
+            data: {
+                status: "success",
+                data: {
+                    weather: [
+                        { hour: '00', temperature: '10°C'},
+                        { hour: '01', temperature: '11°C'},
+                        { hour: '02', temperature: '12°C'},
+                        { hour: '03', temperature: '13°C'},
+                        { hour: '04', temperature: '14°C'},
+                        { hour: '05', temperature: '15°C'},
+                        { hour: '06', temperature: '16°C'},
+                        { hour: '07', temperature: '17°C'},
+                        { hour: '08', temperature: '18°C'},
+                        { hour: '09', temperature: '19°C'},
+                        { hour: '10', temperature: '20°C'},
+                        { hour: '11', temperature: '21°C'},
+                        { hour: '12', temperature: '22°C'},
+                        { hour: '13', temperature: '23°C'},
+                        { hour: '14', temperature: '24°C'},
+                        { hour: '15', temperature: '25°C'},
+                        { hour: '16', temperature: '26°C'},
+                        { hour: '17', temperature: '27°C'},
+                        { hour: '18', temperature: '28°C'},
+                        { hour: '19', temperature: '29°C'},
+                        { hour: '20', temperature: '30°C'},
+                        { hour: '21', temperature: '31°C'},
+                        { hour: '22', temperature: '32°C'},
+                        { hour: '23', temperature: '33°C'},
+                    ]
+                }
+            }
+        }))
+    })
+}));
 
 const localVue = createLocalVue();
 localVue.use(Vuetify);
-
-
 
 
 // describe('WeatherQuery.vue', () => {
@@ -155,7 +194,9 @@ describe('WeatherQuery', () => {
   beforeEach(() => {
       wrapper = mount(WeatherQuery, {
         localVue,
-        mocks,
+        mocks: {
+            $axios: axios
+        },
         stubs
       });
 
@@ -200,47 +241,7 @@ describe('WeatherQuery', () => {
 
         // Wait for Vue to update
         await wrapper.vm.$nextTick();
-
-        // Check if the 'hour data property of the component is updated
-        expect(wrapper.vm.hour).toBe('12');
-    });
-
     it('displays all hours if no hour is specified', async () => {
-        // Mock the Axios post call
-        wrapper.vm.$axios.post = jest.fn().mockResolvedValue({
-            data: {
-                status: "success",
-                data: {
-                    weather: [
-                        { hour: '00', temperature: '10°C'},
-                        { hour: '01', temperature: '11°C'},
-                        { hour: '02', temperature: '12°C'},
-                        { hour: '03', temperature: '13°C'},
-                        { hour: '04', temperature: '14°C'},
-                        { hour: '05', temperature: '15°C'},
-                        { hour: '06', temperature: '16°C'},
-                        { hour: '07', temperature: '17°C'},
-                        { hour: '08', temperature: '18°C'},
-                        { hour: '09', temperature: '19°C'},
-                        { hour: '10', temperature: '20°C'},
-                        { hour: '11', temperature: '21°C'},
-                        { hour: '12', temperature: '22°C'},
-                        { hour: '13', temperature: '23°C'},
-                        { hour: '14', temperature: '24°C'},
-                        { hour: '15', temperature: '25°C'},
-                        { hour: '16', temperature: '26°C'},
-                        { hour: '17', temperature: '27°C'},
-                        { hour: '18', temperature: '28°C'},
-                        { hour: '19', temperature: '29°C'},
-                        { hour: '20', temperature: '30°C'},
-                        { hour: '21', temperature: '31°C'},
-                        { hour: '22', temperature: '32°C'},
-                        { hour: '23', temperature: '33°C'},
-                      ]
-                }
-            }
-        });
-
         // Set location and date, but leave hour empty
         wrapper.setData({
             location: 'New York',
@@ -252,7 +253,7 @@ describe('WeatherQuery', () => {
         await wrapper.vm.submitForm();
 
         // Assert that the response_data is populated with data for all hours
-        expect(wrapper.vm.response_data.length).toBe(14); // Assuming 24 entries for 24 hours
+        expect(wrapper.vm.response_data.length).toBe(24); // Assuming 24 entries for 24 hours
         expect(wrapper.vm.response_data[0].hour).toBe('00');
         expect(wrapper.vm.response_data[0].hour).toBe('01');
         expect(wrapper.vm.response_data[0].hour).toBe('02');
@@ -277,6 +278,11 @@ describe('WeatherQuery', () => {
         expect(wrapper.vm.response_data[0].hour).toBe('21');
         expect(wrapper.vm.response_data[0].hour).toBe('22');
         expect(wrapper.vm.response_data[0].hour).toBe('23');
+        // Check if the 'hour data property of the component is updated
+        expect(wrapper.vm.hour).toBe('12');
+    });
+
+
         // Additional assertions can be made here to check the content of response_data
     });
 
