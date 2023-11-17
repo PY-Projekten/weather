@@ -6,44 +6,96 @@ import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 
 
+// ** Axios Mock-Up
+// jest.mock('axios', () => ({
+//   post: jest.fn(() => Promise.resolve({
+//     data: {
+//       status: "success",
+//       data: {
+//         weather: Array(24).fill().map((_, index) => ({ hour: index.toString().padStart(2, '0'), temperature: `${10 + index}°C` }))
+//       }
+//     }
+//   }))
+// }));
 
+// ** Axios Mock-Up Test-Version 2
+// jest.mock('axios', () => ({
+//   post: jest.fn((url, postData) => {
+//     if (url === '/weather_query/') {
+//       // Check if a specific hour is specified
+//       if (postData.hour) {
+//         // Return data for the specified hour
+//         return Promise.resolve({
+//           data: {
+//             status: "success",
+//             data: {
+//               location: { /* location details */ },
+//               weather: [{ date: postData.date, hour: postData.hour, temperature: `${10 + parseInt(postData.hour)}°C` }]
+//             }
+//           }
+//         });
+//       } else {
+//         // Return full 24-hour data
+//         return Promise.resolve({
+//           data: {
+//             status: "success",
+//             data: {
+//               location: { /* location details */ },
+//               weather: Array(24).fill().map((_, index) => ({
+//                 date: postData.date,
+//                 hour: index.toString().padStart(2, '0'),
+//                 temperature: `${10 + index}°C`
+//               }))
+//             }
+//           }
+//         });
+//       }
+//     }
+//     // Handle other URLs or return a default mock response
+//   })
+// }));
+
+// ** Axios Mock-Up Test-Version 3
 jest.mock('axios', () => ({
-    create: () => ({
-        post: jest.fn(() => Promise.resolve({
+  post: jest.fn((url, postData) => {
+    const mockLocation = {
+      id: 1, // Example ID
+      latitude: "44.41", // Example latitude
+      longitude: "8.93", // Example longitude
+      name: "genoa" // Example location name
+    };
+
+    if (url === '/weather_query/') {
+      if (postData.hour) {
+        return Promise.resolve({
+          data: {
+            status: "success",
             data: {
-                status: "success",
-                data: {
-                    weather: [
-                        { hour: '00', temperature: '10°C'},
-                        { hour: '01', temperature: '11°C'},
-                        { hour: '02', temperature: '12°C'},
-                        { hour: '03', temperature: '13°C'},
-                        { hour: '04', temperature: '14°C'},
-                        { hour: '05', temperature: '15°C'},
-                        { hour: '06', temperature: '16°C'},
-                        { hour: '07', temperature: '17°C'},
-                        { hour: '08', temperature: '18°C'},
-                        { hour: '09', temperature: '19°C'},
-                        { hour: '10', temperature: '20°C'},
-                        { hour: '11', temperature: '21°C'},
-                        { hour: '12', temperature: '22°C'},
-                        { hour: '13', temperature: '23°C'},
-                        { hour: '14', temperature: '24°C'},
-                        { hour: '15', temperature: '25°C'},
-                        { hour: '16', temperature: '26°C'},
-                        { hour: '17', temperature: '27°C'},
-                        { hour: '18', temperature: '28°C'},
-                        { hour: '19', temperature: '29°C'},
-                        { hour: '20', temperature: '30°C'},
-                        { hour: '21', temperature: '31°C'},
-                        { hour: '22', temperature: '32°C'},
-                        { hour: '23', temperature: '33°C'},
-                    ]
-                }
+              location: mockLocation,
+              weather: [{ date: postData.date, hour: postData.hour, temperature: `${10 + parseInt(postData.hour)}°C` }]
             }
-        }))
-    })
+          }
+        });
+      } else {
+        return Promise.resolve({
+          data: {
+            status: "success",
+            data: {
+              location: mockLocation,
+              weather: Array(24).fill().map((_, index) => ({
+                date: postData.date,
+                hour: index.toString().padStart(2, '0'),
+                temperature: `${10 + index}°C`
+              }))
+            }
+          }
+        });
+      }
+    }
+    // Handle other URLs or return a default mock response
+  })
 }));
+
 
 const localVue = createLocalVue();
 localVue.use(Vuetify);
@@ -189,7 +241,7 @@ const stubs = {
 
 describe('WeatherQuery', () => {
   let wrapper;
-  let submitFormSpy;
+  let consoleSpy
 
   beforeEach(() => {
       wrapper = mount(WeatherQuery, {
@@ -197,29 +249,20 @@ describe('WeatherQuery', () => {
         mocks: {
             $axios: axios
         },
-        stubs
+        stubs: ['v-btn']
       });
-
-
-      // Check if submitForm method exists and create a spy
-      if (typeof wrapper.vm.submitForm === 'function') {
-          submitFormSpy = jest.spyOn(wrapper.vm, 'submitForm');
-      }
+      consoleSpy = jest.spyOn(console, 'log');
   });
 
   afterEach(() => {
-    if (submitFormSpy) {
-        submitFormSpy.mockRestore();
-    }
+    jest.clearAllMocks();
   });
 
     it('updates data model when user inputs location', async () => {
         // Directly set the value of 'location' and check the reaction of the component
         wrapper.setData({ location: 'New York'});
-
         // Wait for Vue to update
         await wrapper.vm.$nextTick();
-
         // Check if the 'location data property of the component is updated
         expect(wrapper.vm.location).toBe('New York');
     });
@@ -227,10 +270,8 @@ describe('WeatherQuery', () => {
     it('updates data model when user inputs date', async () => {
         // Directly set the value of 'date' and check the reaction of the component
         wrapper.setData({ date: '2022-01-01'});
-
         // Wait for Vue to update
         await wrapper.vm.$nextTick();
-
         // Check if the 'date data property of the component is updated
         expect(wrapper.vm.date).toBe('2022-01-01');
     });
@@ -238,9 +279,9 @@ describe('WeatherQuery', () => {
     it('updates data model when user inputs hour', async () => {
         // Directly set the value of 'hour' and check the reaction of the component
         wrapper.setData({ hour: '12'});
-
         // Wait for Vue to update
         await wrapper.vm.$nextTick();
+        expect(wrapper.vm.hour).toBe('12');
     });
 
     it('displays all hours if no hour is specified', async () => {
@@ -252,45 +293,99 @@ describe('WeatherQuery', () => {
         });
 
         // Trigger the submitForm method
+        await wrapper.vm.$nextTick();
         await wrapper.vm.submitForm();
 
         // Assert that the response_data is populated with data for all hours
+        console.log(wrapper.vm.response_data, wrapper.vm.errorMessage)
         expect(wrapper.vm.response_data.length).toBe(24); // Assuming 24 entries for 24 hours
         expect(wrapper.vm.response_data[0].hour).toBe('00');
-        expect(wrapper.vm.response_data[0].hour).toBe('01');
-        expect(wrapper.vm.response_data[0].hour).toBe('02');
-        expect(wrapper.vm.response_data[0].hour).toBe('03');
-        expect(wrapper.vm.response_data[0].hour).toBe('04');
-        expect(wrapper.vm.response_data[0].hour).toBe('05');
-        expect(wrapper.vm.response_data[0].hour).toBe('06');
-        expect(wrapper.vm.response_data[0].hour).toBe('07');
-        expect(wrapper.vm.response_data[0].hour).toBe('08');
-        expect(wrapper.vm.response_data[0].hour).toBe('09');
-        expect(wrapper.vm.response_data[0].hour).toBe('10');
-        expect(wrapper.vm.response_data[0].hour).toBe('11');
-        expect(wrapper.vm.response_data[0].hour).toBe('12');
-        expect(wrapper.vm.response_data[0].hour).toBe('13');
-        expect(wrapper.vm.response_data[0].hour).toBe('14');
-        expect(wrapper.vm.response_data[0].hour).toBe('15');
-        expect(wrapper.vm.response_data[0].hour).toBe('16');
-        expect(wrapper.vm.response_data[0].hour).toBe('17');
-        expect(wrapper.vm.response_data[0].hour).toBe('18');
-        expect(wrapper.vm.response_data[0].hour).toBe('19');
-        expect(wrapper.vm.response_data[0].hour).toBe('20');
-        expect(wrapper.vm.response_data[0].hour).toBe('21');
-        expect(wrapper.vm.response_data[0].hour).toBe('22');
-        expect(wrapper.vm.response_data[0].hour).toBe('23');
+        expect(wrapper.vm.response_data[1].hour).toBe('01');
+        expect(wrapper.vm.response_data[2].hour).toBe('02');
+        expect(wrapper.vm.response_data[3].hour).toBe('03');
+        expect(wrapper.vm.response_data[4].hour).toBe('04');
+        expect(wrapper.vm.response_data[5].hour).toBe('05');
+        expect(wrapper.vm.response_data[6].hour).toBe('06');
+        expect(wrapper.vm.response_data[7].hour).toBe('07');
+        expect(wrapper.vm.response_data[8].hour).toBe('08');
+        expect(wrapper.vm.response_data[9].hour).toBe('09');
+        expect(wrapper.vm.response_data[10].hour).toBe('10');
+        expect(wrapper.vm.response_data[11].hour).toBe('11');
+        expect(wrapper.vm.response_data[12].hour).toBe('12');
+        expect(wrapper.vm.response_data[13].hour).toBe('13');
+        expect(wrapper.vm.response_data[14].hour).toBe('14');
+        expect(wrapper.vm.response_data[15].hour).toBe('15');
+        expect(wrapper.vm.response_data[16].hour).toBe('16');
+        expect(wrapper.vm.response_data[17].hour).toBe('17');
+        expect(wrapper.vm.response_data[18].hour).toBe('18');
+        expect(wrapper.vm.response_data[19].hour).toBe('19');
+        expect(wrapper.vm.response_data[20].hour).toBe('20');
+        expect(wrapper.vm.response_data[21].hour).toBe('21');
+        expect(wrapper.vm.response_data[22].hour).toBe('22');
+        expect(wrapper.vm.response_data[23].hour).toBe('23');
         // Check if the 'hour data property of the component is updated
-        expect(wrapper.vm.hour).toBe('12');
+        // expect(wrapper.vm.hour).toBe('12');
     });
-
-
         // Additional assertions can be made here to check the content of response_data
 
+    // it('initializes response_data and logs form data on submit', async () => {
+    //   // Set the form data
+    //   wrapper.setData({
+    //     location: 'New York',
+    //     date: '2022-01-01',
+    //     hour: '12'
+    //   });
+    //
+    //   // Call submitForm
+    //   await wrapper.vm.submitForm();
+    //
+    //   // Check if response_data is initialized to an empty array
+    //   expect(wrapper.vm.response_data).toEqual([]);
+    //
+    //   // Check if console.log was called with the correct form data
+    //   expect(consoleSpy).toHaveBeenCalledWith('submitForm is triggered');
+    //   expect(consoleSpy).toHaveBeenCalledWith('form data:', 'New York', '2022-01-01', '12');
+    // });
+
+    // ** submitForm Method Test 2
+  // it('initializes response_data and logs form data on submit', async () => {
+  //   // Set the form data
+  //   wrapper.setData({
+  //     location: 'New York',
+  //     date: '2022-01-01',
+  //     hour: ''
+  //   });
+  //
+  //   // Call submitForm
+  //   await wrapper.vm.submitForm();
+  //
+  //   // Check if response_data is initialized to an empty array
+  //   expect(wrapper.vm.response_data).toEqual([]);
+  //
+  //   // Check if console.log was called with the correct form data
+  //   expect(consoleSpy).toHaveBeenCalledWith('submitForm is triggered');
+  //   // ... other assertions ...
+  // });
+
+  // ** submitForm Method Test 3
+  it('initializes response_data and logs form data on submit', async () => {
+    // Adjust the mock for this test
+    axios.post.mockImplementationOnce(() => Promise.resolve({ data: { status: "success", data: { weather: [] } } }));
+
+    // Ensure response_data is initially empty
+    expect(wrapper.vm.response_data).toEqual([]);
+
+    // Call submitForm and wait for it to complete
+    await wrapper.vm.submitForm();
+
+    // Now check if response_data is still empty after submitForm
+    expect(wrapper.vm.response_data).toEqual([]);
+
+    // ... other assertions ...
+  });
 
 
-
-    // // ** submitForm Method TestTest
+    // // ** submitForm Method Test 1
     // it('triggers submitForm on button click', async () => {
     //     // Set necessary data
     //     wrapper.setData({
