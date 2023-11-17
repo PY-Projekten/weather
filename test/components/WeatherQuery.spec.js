@@ -241,6 +241,8 @@ describe('WeatherQuery', () => {
 
         // Wait for Vue to update
         await wrapper.vm.$nextTick();
+    });
+
     it('displays all hours if no hour is specified', async () => {
         // Set location and date, but leave hour empty
         wrapper.setData({
@@ -284,7 +286,7 @@ describe('WeatherQuery', () => {
 
 
         // Additional assertions can be made here to check the content of response_data
-    });
+
 
 
 
