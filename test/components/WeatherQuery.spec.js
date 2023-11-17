@@ -6,54 +6,6 @@ import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 
 
-// ** Axios Mock-Up
-// jest.mock('axios', () => ({
-//   post: jest.fn(() => Promise.resolve({
-//     data: {
-//       status: "success",
-//       data: {
-//         weather: Array(24).fill().map((_, index) => ({ hour: index.toString().padStart(2, '0'), temperature: `${10 + index}°C` }))
-//       }
-//     }
-//   }))
-// }));
-
-// ** Axios Mock-Up Test-Version 2
-// jest.mock('axios', () => ({
-//   post: jest.fn((url, postData) => {
-//     if (url === '/weather_query/') {
-//       // Check if a specific hour is specified
-//       if (postData.hour) {
-//         // Return data for the specified hour
-//         return Promise.resolve({
-//           data: {
-//             status: "success",
-//             data: {
-//               location: { /* location details */ },
-//               weather: [{ date: postData.date, hour: postData.hour, temperature: `${10 + parseInt(postData.hour)}°C` }]
-//             }
-//           }
-//         });
-//       } else {
-//         // Return full 24-hour data
-//         return Promise.resolve({
-//           data: {
-//             status: "success",
-//             data: {
-//               location: { /* location details */ },
-//               weather: Array(24).fill().map((_, index) => ({
-//                 date: postData.date,
-//                 hour: index.toString().padStart(2, '0'),
-//                 temperature: `${10 + index}°C`
-//               }))
-//             }
-//           }
-//         });
-//       }
-//     }
-//     // Handle other URLs or return a default mock response
-//   })
-// }));
 
 // ** Axios Mock-Up Test-Version 3
 jest.mock('axios', () => ({
@@ -101,143 +53,20 @@ const localVue = createLocalVue();
 localVue.use(Vuetify);
 
 
-// describe('WeatherQuery.vue', () => {
-//
-// //   // Test 1: Rendering Test
-//   it('renders input fields for location, date, and hour', () => {
-//     const wrapper = mount(WeatherQuery);
-//     expect(wrapper.find('#location').exists()).toBe(true); // Modified the ID based on your code
-//     expect(wrapper.find('#date').exists()).toBe(true); // Modified the ID based on your code
-//     expect(wrapper.find('#hour').exists()).toBe(true); // Modified the ID based on your code
-//   });
-// //
-// //   Test 2: Method Test (submitForm)
-//   it('submitForm method submits the weather query', async () => {
-//     const wrapper = mount(WeatherQuery);
-//
-//     // Mocking the axios post method
-//     wrapper.vm.$axios.post = jest.fn(() => Promise.resolve({ data: {} }));
-//
-//     // Setting data properties and calling submitForm
-//     await wrapper.setData({ location: 'Test Location', date: '2023-10-30', hour: '14' });
-//     await wrapper.vm.submitForm();
-//
-//     // Checking if axios post method was called with correct parameters
-//     expect(wrapper.vm.$axios.post).toHaveBeenCalledWith(
-//       '/weather_query/',
-//       { location: 'Test Location', date: '2023-10-30', hour: '14' }
-//     );
-//   });
-
-  // Additional tests for other methods and functionalities can be added similarly
-
-// });
-
-
-// Basic Rendering Test
-// describe('WeatherQuery', () => {
-//   // Test to check if the component renders without errors
-//   it('renders without errors', () => {
-//     const wrapper = shallowMount(WeatherQuery);
-//     expect(wrapper.exists()).toBe(true);
-//   });
-
-
-// describe('WeatherQuery', () => {
-//   // ... other tests ...
-//
-//   it('updates data model when user inputs location', async () => {
-//     const wrapper = mount(WeatherQuery);
-//
-//     // Log the rendered HTML to inspect the structure
-//     console.log(wrapper.html());
-//
-//     // Find the input element within v-autocomplete
-//     // Adjust the selector if necessary based on the actual rendered HTML
-//     const input = wrapper.find('#test-location-input input');
-//
-//     // Check if the input element is found
-//     if (input.exists()) {
-//       // Simulate user typing in the autocomplete field
-//       await input.setValue('New York');
-//       await input.trigger('input');
-//
-//       // Wait for any asynchronous operations (like data fetching or DOM updates)
-//       await wrapper.vm.$nextTick();
-//
-//       // Simulate selecting an item from the dropdown
-//       // This step requires knowing the structure of the dropdown.
-//       // You might need to find the dropdown item and trigger a click event on it.
-//       // Example: wrapper.find('.dropdown-item-class-for-new-york').trigger('click');
-//
-//       await wrapper.vm.$nextTick();
-
-      // Check if the 'location' data property of the component is updated
-      // expect(wrapper.vm.location).toBe('New York');
-//     } else {
-//       throw new Error('Input element not found');
-//     }
-//   });
-// });
-
-
-// ** Mounting Vuetify directly
-
-// describe('WeatherQuery', () => {
-//   let vuetify;
-//
-//   beforeEach(() => {
-//     vuetify = new Vuetify();
-//   });
-//
-//   it('updates data model when user inputs location', async () => {
-//     const wrapper = mount(WeatherQuery, {
-//       localVue,
-//       vuetify,
-//     });
-//
-//     // Log the rendered HTML to inspect the structure
-//     console.log(wrapper.html());
-//
-//     // Find the input element within v-autocomplete
-//     // Adjust the selector based on the rendered HTML
-//     const input = wrapper.find('#test-location-input input');
-//
-//     if (input.exists()) {
-//       // Simulate user typing in the autocomplete field
-//       await input.setValue('New York');
-//       await input.trigger('input');
-//
-//       // Wait for any asynchronous operations (like data fetching or DOM updates)
-//       await wrapper.vm.$nextTick();
-//
-//       // Simulate selecting an item from the dropdown
-//       // This step requires knowing the structure of the dropdown.
-//       // You might need to find the dropdown item and trigger a click event on it.
-//       // Example: wrapper.find('.dropdown-item-selector').trigger('click');
-//
-//       await wrapper.vm.$nextTick();
-//
-//       // Check if the 'location' data property of the component is updated
-//       expect(wrapper.vm.location).toBe('New York');
-//     } else {
-//       throw new Error('Input element not found');
-//     }
-//   });
-//
-//   // ... any other tests ...
-// });
-
-
-
-
 const mocks = {
     $vuetify: { breakpoint: {} },
 };
-
 const stubs = {
     'v-btn': true,  // Add stubs for other Vuetify components as needed
 };
+
+// ******************************
+// **** Method: submitForm() ****
+// ******************************
+
+
+// *** Set Up ***
+// **************
 
 describe('WeatherQuery', () => {
   let wrapper;
@@ -258,6 +87,14 @@ describe('WeatherQuery', () => {
     jest.clearAllMocks();
   });
 
+  // *** Test to check if the component renders without errors ***
+    it('renders without errors', () => {
+      const wrapper = shallowMount(WeatherQuery);
+      expect(wrapper.exists()).toBe(true);
+    });
+
+    // *** Testing Modular Input Fields ***
+    // ***********************************
     it('updates data model when user inputs location', async () => {
         // Directly set the value of 'location' and check the reaction of the component
         wrapper.setData({ location: 'New York'});
@@ -328,46 +165,8 @@ describe('WeatherQuery', () => {
     });
         // Additional assertions can be made here to check the content of response_data
 
-    // it('initializes response_data and logs form data on submit', async () => {
-    //   // Set the form data
-    //   wrapper.setData({
-    //     location: 'New York',
-    //     date: '2022-01-01',
-    //     hour: '12'
-    //   });
-    //
-    //   // Call submitForm
-    //   await wrapper.vm.submitForm();
-    //
-    //   // Check if response_data is initialized to an empty array
-    //   expect(wrapper.vm.response_data).toEqual([]);
-    //
-    //   // Check if console.log was called with the correct form data
-    //   expect(consoleSpy).toHaveBeenCalledWith('submitForm is triggered');
-    //   expect(consoleSpy).toHaveBeenCalledWith('form data:', 'New York', '2022-01-01', '12');
-    // });
 
-    // ** submitForm Method Test 2
-  // it('initializes response_data and logs form data on submit', async () => {
-  //   // Set the form data
-  //   wrapper.setData({
-  //     location: 'New York',
-  //     date: '2022-01-01',
-  //     hour: ''
-  //   });
-  //
-  //   // Call submitForm
-  //   await wrapper.vm.submitForm();
-  //
-  //   // Check if response_data is initialized to an empty array
-  //   expect(wrapper.vm.response_data).toEqual([]);
-  //
-  //   // Check if console.log was called with the correct form data
-  //   expect(consoleSpy).toHaveBeenCalledWith('submitForm is triggered');
-  //   // ... other assertions ...
-  // });
-
-  // ** submitForm Method Test 3
+  // *** submitForm response_data trigger ***
   it('initializes response_data and logs form data on submit', async () => {
     // Adjust the mock for this test
     axios.post.mockImplementationOnce(() => Promise.resolve({ data: { status: "success", data: { weather: [] } } }));
@@ -384,38 +183,87 @@ describe('WeatherQuery', () => {
     // ... other assertions ...
   });
 
+  // *** Testing Form Data Preparation ***
+  it('prepares and sends correct form data on submit', async () => {
+    // Set component data properties
+    wrapper.setData({
+      location: 'TestLocation',
+      date: '2023-11-13',
+      hour: '10' });
 
-    // // ** submitForm Method Test 1
-    // it('triggers submitForm on button click', async () => {
-    //     // Set necessary data
-    //     wrapper.setData({
-    //         location: 'New York',
-    //         date: '2022-01-01',
-    //         hour: '12'
-    //     });
-    //
-    //     // Wait for Vue to update
-    //     await wrapper.vm.$nextTick();
-    //
-    //     // Mock any asynchronous operations if present
-    //     // For example, if submitForm makes an API call, mock it here
-    //
-    //     // Trigger the button click
-    //     const button = wrapper.findComponent({ name: 'v-btn' });
-    //     console.log(button.exists());
-    //     await button.trigger('click');
-    //
-    //
-    //     // Log the number of times submitFormSpy was called
-    //     console.log('submitFormSpy called:', submitFormSpy.mock.calls.length);
-    //
-    //     // Assert that the submitForm method was called
-    //         expect(submitFormSpy).toHaveBeenCalled();
-    //
-    //     // Clean up
-    //     submitFormSpy.mockRestore();
-    // });
-    //
-    // // ... any other tests ...
+    // Spy on axios.post
+    const postSpy = jest.spyOn(axios, 'post');
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that axios.post was called with correct data
+    expect(postSpy).toHaveBeenCalledWith('/weather_query/', {
+      location: 'TestLocation',
+      date: '2023-11-13',
+      hour: '10'
+    });
+  });
+
+  // *** Testing Successful Data Retrieval ***
+  it('updates response_data on successful data retrieval', async () => {
+    // Mock Axios POST to return a successful response
+    axios.post.mockResolvedValue ({
+      data: {
+        status: "success",
+        data: {
+          weather: [{ date: "2023-11-13", hour: "10", temperature: 14.9 }]
+        }
+      }
+    });
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that response_data is updated correctly
+    expect(wrapper.vm.response_data).toEqual([{ date: "2023-11-13", hour: "10", temperature: 14.9 }]);
+  });
+
+  // **Test Backend Error Handling:**
+  // ********************************
+
+  it('handles backend error correctly', async () => {
+    // Mock axios.post to simulate a backend error
+    axios.post.mockRejectedValueOnce({
+      response: { data: { message: 'Backend error occurred' } }
+    });
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that errorMessage is updated correctly
+    expect(wrapper.vm.errorMessage).toBe('Backend error occurred');
+  });
+
+  it('handles network error correctly', async () => {
+    // Mock axios.post to simulate a network error
+    axios.post.mockRejectedValueOnce({ request: {} });
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that errorMessage is updated correctly
+    expect(wrapper.vm.errorMessage).toBe('No response from the server');
+  });
+
+  it('handles request setup error correctly', async () => {
+    // Mock axios.post to simulate a request setup error
+    axios.post.mockRejectedValueOnce(new Error('Request setup failed'));
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that errorMessage is updated correctly
+    expect(wrapper.vm.errorMessage).toBe('Error setting up the request');
+  });
+
+
+  // Mock any asynchronous operations if present
+  // For example, if submitForm makes an API call, mock it here
 });
 
