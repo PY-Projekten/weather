@@ -262,6 +262,27 @@ describe('WeatherQuery', () => {
     expect(wrapper.vm.errorMessage).toBe('Error setting up the request');
   });
 
+  // *** Edge Cases: ***
+  // ********************************
+
+  it('does not submit form with invalid location', async () => {
+    // Set component data with a location not in the locationsList
+    wrapper.setData({
+      location: 'InvalidLocation',
+      date: '2023-11-13',
+      hour: '10'
+    });
+
+    // Spy on axios.post to check if it gets called
+    const postSpy = jest.spyOn(axios, 'post');
+
+    // Trigger submitForm
+    await wrapper.vm.submitForm();
+
+    // Assert that axios.post was not called due to invalid location
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
 
   // Mock any asynchronous operations if present
   // For example, if submitForm makes an API call, mock it here

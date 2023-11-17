@@ -1,68 +1,70 @@
 
 
+<!--&lt;!&ndash;Test Version (adjusting autocomplete)&ndash;&gt;-->
 <!--<template>-->
 <!--  <div>-->
 <!--    <h1>Weather Query</h1>-->
 
-<!--      <span>My Test: {{ my_test }}</span> <br>-->
-<!--      <span>Test: {{ test }}</span>-->
-<!--      <div>-->
-<!--        <label for="location">Location:</label>-->
-<!--        <v-autocomplete-->
-<!--          ref="autocomplete"-->
-<!--          v-model="location"-->
-<!--          :items="locationsList"-->
-<!--          @input="handleInput"-->
-<!--          @blur="show_model"-->
-<!--          @focus="handleFocus"-->
-<!--          @keydown.enter="show_model"-->
-<!--          @keydown.tab="show_model"-->
-<!--          :search-input.sync="searchInput"-->
-<!--          taggable-->
-<!--          placeholder="Select or type a location"-->
-<!--          >-->
-<!--          <template v-slot:no-data>-->
-<!--            Data does not yet exist in List.  If you have entered in a new Location, press ENTER-->
-<!--          </template>-->
-<!--        </v-autocomplete>-->
-<!--      </div>-->
+<!--    <span>My Test: {{ my_test }}</span> <br>-->
+<!--    <span>Test: {{ test }}</span>-->
+<!--    <div>-->
+<!--      <label for="location">Location:</label>-->
+<!--      <v-autocomplete-->
+<!--        id="test-location-input"-->
+<!--        ref="autocomplete"-->
+<!--        v-model="location"-->
+<!--        :items="locationsList"-->
+<!--        @input="handleInput"-->
+<!--        @blur="show_model"-->
+<!--        @focus="handleFocus"-->
+<!--        @keydown.enter="show_model"-->
+<!--        @keydown.tab="show_model"-->
+<!--        :search-input.sync="searchInput"-->
+<!--        taggable-->
+<!--        placeholder="Select or type a location"-->
+<!--      >-->
+<!--        <template v-slot:no-data>-->
+<!--          Data does not yet exist in List.  If you have entered in a new Location, press ENTER-->
+<!--        </template>-->
+<!--      </v-autocomplete>-->
+<!--    </div>-->
 
-<!--      <div>-->
-<!--        <label for="date">Date:</label>-->
-<!--        <input type="date" v-model="date" />-->
-<!--      </div>-->
+<!--    <div>-->
+<!--      <label for="date">Date:</label>-->
+<!--      <input type="date" v-model="date" />-->
+<!--    </div>-->
 
-<!--      <div>-->
-<!--        <label for="hour">Hour:</label>-->
-<!--        <select v-model="hour" id="hour">-->
-<!--          <option value="" selected>Select Hour</option>-->
-<!--          <option v-for="h in 23" :key="h" :value="h < 10 ? `0${h}` : h.toString()">-->
-<!--            {{ h < 10 ? `0${h}:00` : `${h}:00` }}-->
-<!--          </option>-->
-<!--        </select>-->
-<!--        &lt;!&ndash; <input type="number" v-model="hour" /> &ndash;&gt;-->
-<!--      </div>-->
+<!--    <div>-->
+<!--      <label for="hour">Hour:</label>-->
+<!--      <select v-model="hour" id="hour">-->
+<!--        <option value="" selected>Select Hour</option>-->
+<!--        <option v-for="h in 23" :key="h" :value="h < 10 ? `0${h}` : h.toString()">-->
+<!--          {{ h < 10 ? `0${h}:00` : `${h}:00` }}-->
+<!--        </option>-->
+<!--      </select>-->
+<!--      &lt;!&ndash; <input type="number" v-model="hour" /> &ndash;&gt;-->
+<!--    </div>-->
 
-<!--      <v-btn type="submit" @click="submitForm">Query</v-btn>-->
+<!--    <v-btn type="submit" @click="submitForm">Query</v-btn>-->
 
 
 <!--    <div v-if="response_data.length">-->
 <!--      <h2>Results:</h2>-->
 <!--      <table>-->
 <!--        <thead>-->
-<!--          <tr>-->
-<!--            <th>Date</th>-->
-<!--            <th>Hour</th>-->
-<!--            <th>Temperature</th>-->
-<!--          </tr>-->
+<!--        <tr>-->
+<!--          <th>Date</th>-->
+<!--          <th>Hour</th>-->
+<!--          <th>Temperature</th>-->
+<!--        </tr>-->
 <!--        </thead>-->
 <!--        <tbody>-->
-<!--          <tr v-for="item in response_data" :key="item.date + item.hour">-->
-<!--            <td>{{ item.date }}</td>-->
-<!--            <td>{{ item.hour }}</td>-->
-<!--            <td>{{ item.temperature }}</td>-->
-<!--            <td><v-icon>mdi-weather-cloudy</v-icon></td>-->
-<!--          </tr>-->
+<!--        <tr v-for="item in response_data" :key="item.date + item.hour">-->
+<!--          <td>{{ item.date }}</td>-->
+<!--          <td>{{ item.hour }}</td>-->
+<!--          <td>{{ item.temperature }}</td>-->
+<!--          <td><v-icon>mdi-weather-cloudy</v-icon></td>-->
+<!--        </tr>-->
 <!--        </tbody>-->
 <!--      </table>-->
 <!--    </div>-->
@@ -100,14 +102,14 @@
 <!--export default {-->
 <!--  components: {-->
 <!--    //VAutocomplete-->
-<!--},-->
-<!--props: {-->
-<!--  test: Number,-->
-<!--  set_test: {-->
-<!--    type: Function,-->
-<!--    default: () => {}-->
-<!--  }-->
-<!--},-->
+<!--  },-->
+<!--  props: {-->
+<!--    test: Number,-->
+<!--    set_test: {-->
+<!--      type: Function,-->
+<!--      default: () => {}-->
+<!--    }-->
+<!--  },-->
 <!--  data() {-->
 <!--    return {-->
 <!--      dialog: false,-->
@@ -117,7 +119,7 @@
 <!--      hour: '',-->
 <!--      locationsList: [], // populate this list from your API-->
 <!--      response_data: [], // populate this with the query results from your API-->
-<!--/*       noDataResult: true */-->
+<!--      /*       noDataResult: true */-->
 <!--      errorMessage: ''-->
 <!--    };-->
 <!--  },-->
@@ -149,13 +151,13 @@
 <!--    },-->
 <!--    noDataResult() {-->
 <!--      console.log('test')-->
-<!--       // Your custom function here, e.g., fetching new locations-->
-<!--       this.fetchNewLocations();-->
-<!--       return 'Fetching new locations...';-->
+<!--      // Your custom function here, e.g., fetching new locations-->
+<!--      this.fetchNewLocations();-->
+<!--      return 'Fetching new locations...';-->
 <!--    },-->
 <!--    fetchNewLocations() {-->
-<!--        // Placeholder function, you can add functionality here later-->
-<!--        console.log('Fetching new locations...');-->
+<!--      // Placeholder function, you can add functionality here later-->
+<!--      console.log('Fetching new locations...');-->
 <!--    },-->
 <!--    async fetchLocations() {-->
 <!--      try {-->
@@ -167,6 +169,7 @@
 <!--    },-->
 
 <!--    async submitForm() {-->
+<!--      console.log('submitForm is triggered');-->
 <!--      this.response_data = []-->
 <!--      console.log("form data:", this.location, this.date, this.hour);-->
 <!--      try {-->
@@ -221,8 +224,8 @@
 <!--  },-->
 <!--  created() {-->
 <!--    this.set_test(1)-->
-<!--  this.fetchLocations();-->
-<!--  console.log("created")-->
+<!--    this.fetchLocations();-->
+<!--    console.log("created")-->
 <!--  },-->
 
 <!--  watch: {-->
@@ -250,7 +253,10 @@
 
 
 
-<!--Test Version (adjusting autocomplete)-->
+
+
+
+<!--Test Version (Enhancing for Edge Cases)-->
 <template>
   <div>
     <h1>Weather Query</h1>
@@ -422,6 +428,14 @@ export default {
       console.log('submitForm is triggered');
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
+
+      // Check if the location is valid
+      if (!this.locationsList.includes(this.location)) {
+        this.errorMessage = 'Invalid location';
+        console.error('Error: Invalid location');
+        return; // Exit the function if the location is invalid
+      }
+
       try {
         // Define the data to be sent in the POST request
         const postData = {
