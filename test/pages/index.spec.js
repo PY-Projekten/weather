@@ -1,7 +1,7 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import IndexPage from '~/pages/index.vue';
-import WeatherQueryVue from '~/components/WeatherQuery.vue';
+import WeatherQueryVue from '@/components/WeatherQueryOne.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuetify);

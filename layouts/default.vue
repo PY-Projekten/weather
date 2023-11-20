@@ -85,6 +85,7 @@
     >
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <toaster />
   </v-app>
 </template>
 
