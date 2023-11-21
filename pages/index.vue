@@ -17,6 +17,7 @@
 
 <script>
 import WeatherQueryVue from '../components/WeatherQueryOne.vue';
+import WeatherQueryOne from "@/components/WeatherQueryOne.vue";
 export default {
   name: 'IndexPage',
   components: {
