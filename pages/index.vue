@@ -9,8 +9,9 @@
     </v-row>
     <v-row justify="center" align="center">
       <v-col>
-        <weather-query-one v-if="currentVersion === 'WeatherQueryOne'" :test="test" :set_test="set_test"/>
-        <weather-query-vue-two v-else :test="test" :set_test="set_test"/>
+        <weather-query-one v-if="page === 'one'" :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
+        <weather-query-vue-two v-else :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
+
       </v-col>
     </v-row>
   </div>
@@ -26,27 +27,47 @@ export default {
     WeatherQueryOne,
     WeatherQueryVueTwo
   },
-  computed: {
-    currentVersion() {
-      return this.$store.state.controller.page === 'one' ? 'WeatherQueryOne' : 'WeatherQueryVueTwo';
-    }
+  created() {
+    this.test = 10;
+  },
+  mounted() {
+    this.test = 8;
+  },
+  beforeMount() {
+    this.test = 0;
   },
   data() {
     return {
-      test: 9
+      test: 9,
+      currentVersion() {
+        return this.page === 'one' ? 'WeatherQueryOne' : 'WeatherQueryVueTwo';
+      }
     };
   },
+  computed: {
+    page() {
+      return this.$store.state.controller.page;
+    },
+  },
   methods: {
+    // ... your existing methods ...
+    updateCurrentVersion(version) {
+      this.currentVersion = version;
+    },
     set_test(val) {
       this.test = val;
     },
     switchPage() {
-      const newPage = this.$store.state.controller.page === 'one' ? 'two' : 'one';
+      const newPage = this.page === 'one' ? 'two' : 'one';
       this.$store.commit('controller/SET_PAGE', newPage);
     }
   }
 }
 </script>
+
+
+
+
 
 
 

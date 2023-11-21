@@ -161,6 +161,9 @@ export default {
       }
     }
   },
+    currentVersion() {
+      return 'WeatherQueryVueTwo';
+    },
   methods: {
     handleInput(value) {
       this.searchInput = value; // Update the searchInput with the new value
@@ -325,8 +328,9 @@ export default {
   }
   ,
   mounted() {
+    this.$emit('updateVersion', 'WeatherQueryVueTwo');
     console.log("mounted")
-    this.$store.commit('controller/SET_PAGE', 'one')
+    //this.$store.commit('controller/SET_PAGE', 'one')
     /*console.log("created")
     this.$store.commit('alerts/SET_TIMEOUT', 3000)
     this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/

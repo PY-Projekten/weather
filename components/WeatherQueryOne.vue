@@ -131,6 +131,9 @@ export default {
       }
     }
   },
+  currentVersion() {
+    return 'WeatherQueryVueOne';
+  },
   methods: {
     handleInput(value) {
       this.searchInput = value; // Update the searchInput with the new value
@@ -240,11 +243,12 @@ export default {
         }
       }
     }
-  }
+  },
 
-  /*   mounted() {
+    mounted() {
+      this.$emit('updateVersion', 'WeatherQueryVueOne');
       console.log("mounted")
-    },  */
+    },
 };
 </script>
 
