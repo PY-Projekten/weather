@@ -74,7 +74,6 @@ export default {
 
 
 
-
 <!--<template>-->
 <!--  <div>-->
 <!--    <v-row justify="center" align="center">-->

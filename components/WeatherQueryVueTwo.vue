@@ -28,10 +28,40 @@
       </v-autocomplete>
     </div>
 
-    <div>
-      <label for="date">Date:</label>
-      <input type="date" v-model="date" />
-    </div>
+<!--    <div>-->
+<!--      <label for="date">Date:</label>-->
+<!--      <input type="date" v-model="date" />-->
+<!--    </div>-->
+
+    <!-- Date Format Selector -->
+    <v-select
+      :items="['American', 'European']"
+      label="Select Date Format"
+      v-model="selectedDateFormat"
+    ></v-select>
+
+    <!-- Date Picker -->
+    <v-menu
+      ref="menu"
+      v-model="menu"
+      :close-on-content-click="false"
+      :nudge-right="40"
+      transition="scale-transition"
+      offset-y
+      min-width="290px"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-text-field
+          v-model="formattedDate"
+          label="Pick a date"
+          prepend-icon="mdi-calendar"
+          readonly
+          v-bind="attrs"
+          v-on="on"
+        ></v-text-field>
+      </template>
+      <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
+    </v-menu>
 
     <div>
       <label for="hour">Hour:</label>
@@ -144,14 +174,18 @@ export default {
       dialog: false,
       searchInput: '',
       location: '',
-      date: new Date().toISOString().slice(0, 10), // Set default date to current date
+      menu: false, // Controls the visibility of the date picker
+      date: new Date().toISOString().substr(0, 10), // Stores the selected date
       hour: '',
       locationsList: [], // populate this list from your API
       response_data: [], // populate this with the query results from your API
       errorMessage: '',
       errorDialog: false,
       saveDialog: false,
-      popupMessage: ''
+      popupMessage: '',
+      selectedDateFormat: 'American', // Default selection
+      formattedDate: '', // Formatted date based on the selected format
+
     };
   },
   computed: {
@@ -159,7 +193,10 @@ export default {
       get(){
         return this.test
       }
-    }
+    },
+    formattedDate() {
+      return this.formatDate(this.date);
+    },
   },
     currentVersion() {
       return 'WeatherQueryVueTwo';
@@ -311,6 +348,9 @@ export default {
   },
 
   watch: {
+    selectedDateFormat(newFormat) {
+      this.formattedDate = this.formatDate(this.date);
+    },
     /* location(newVal, oldVal) {
        // Check if the location has changed
        if (oldVal !== newVal) {
@@ -325,8 +365,8 @@ export default {
        }
        console.log("---------------SEARCH", this.searchInput)
      }*/
-  }
-  ,
+  },
+
   mounted() {
     this.$emit('updateVersion', 'WeatherQueryVueTwo');
     console.log("mounted")
@@ -334,6 +374,29 @@ export default {
     /*console.log("created")
     this.$store.commit('alerts/SET_TIMEOUT', 3000)
     this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/
+  },
+  formatDate(date) {
+    if (this.selectedDateFormat === 'American') {
+      return this.formatAmericanDate(date);
+    } else {
+      return this.formatEuropeanDate(date);
+    }
+  },
+  formatAmericanDate(date) {
+    // Logic to format the date in MM/DD/YYYY
+    // Example: return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const [year, month, day] = date.split('-');
+    return `${month}/${day}/${year}`;
+  },
+  formatEuropeanDate(date) {
+    // Logic to format the date in DD.MM.YYYY
+    // Example: return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const [year, month, day] = date.split('-');
+    return `${day}.${month}.${year}`;
+  },
+  handleDateChange(newDate) {
+    this.date = newDate;
+    this.formattedDate = this.formatDate(newDate);
   },
 };
 </script>
