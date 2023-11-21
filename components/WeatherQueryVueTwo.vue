@@ -133,11 +133,11 @@ export default {
           // Add more rules for location if needed
         ],
         date: [
-          v => !!v || 'Date is required', // Check if the date is not empty
-          // Add more rules for date if needed
+          v => !!v || 'Date is required',
+          v => /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$/.test(v) || 'Invalid date format',
         ],
         hour: [
-          v => !!v || 'Hour is required', // Check if the hour is not empty
+          v => v === '' || /^(\d{2}:\d{2}(:\d{2})?)$/.test(v) || 'Invalid hour format',
           // Add more rules for hour if needed
         ],
       },
