@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <h1>Weather Query</h1>
@@ -113,7 +112,7 @@ import { VAutocomplete } from "vuetify/lib";
 
 
 export default {
-  name: 'WeatherQueryVueTwo',
+  name: 'WeatherQueryVueThree',
 
   components: {
     //VAutocomplete
@@ -128,18 +127,7 @@ export default {
   data() {
     return {
       rules: {
-        location: [
-          v => !!v || 'Location is required', // Check if the location is not empty
-          // Add more rules for location if needed
-        ],
-        date: [
-          v => !!v || 'Date is required', // Check if the date is not empty
-          // Add more rules for date if needed
-        ],
-        hour: [
-          v => !!v || 'Hour is required', // Check if the hour is not empty
-          // Add more rules for hour if needed
-        ],
+        location: [],
       },
       dialog: false,
       searchInput: '',
@@ -148,6 +136,7 @@ export default {
       hour: '',
       locationsList: [], // populate this list from your API
       response_data: [], // populate this with the query results from your API
+      /*       noDataResult: true */
       errorMessage: '',
       errorDialog: false,
       saveDialog: false,
@@ -203,16 +192,6 @@ export default {
       console.log('submitForm is triggered');
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
-
-      // New validation logic
-      if (!this.validateForm()) {
-        this.$store.dispatch('alerts/showToast', {
-          content: 'Invalid input',
-          color: 'error',
-        });
-        return;
-      }
-
       try {
         // Define the data to be sent in the POST request
         const postData = {
@@ -270,13 +249,6 @@ export default {
           console.error('Error:', error.message)
         }
       }
-    },
-
-    validateForm() {
-      const isLocationValid = this.rules.location.every(rule => rule(this.location));
-      const isDateValid = this.rules.date.every(rule => rule(this.date));
-      const isHourValid = this.rules.hour.every(rule => rule(this.hour));
-      return isLocationValid && isDateValid && isHourValid;
     },
 
     showPopup(message) {
