@@ -52,7 +52,7 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-text-field
-          v-model="formattedDate"
+          v-model="computedFormattedDate"
           label="Pick a date"
           prepend-icon="mdi-calendar"
           readonly
@@ -184,7 +184,6 @@ export default {
       saveDialog: false,
       popupMessage: '',
       selectedDateFormat: 'American', // Default selection
-      formattedDate: '', // Formatted date based on the selected format
 
     };
   },
@@ -194,7 +193,7 @@ export default {
         return this.test
       }
     },
-    formattedDate() {
+    computedFormattedDate() {
       return this.formatDate(this.date);
     },
   },
@@ -340,16 +339,39 @@ export default {
         this.submitForm()
       }
     }
-  },
-  created() {
-    this.set_test(1)
-    this.fetchLocations();
+    },
+    created() {
+      this.set_test(1)
+      this.fetchLocations();
 
-  },
+    },
+    formatDate(date) {
+      if (this.selectedDateFormat === 'American') {
+        return this.formatAmericanDate(date);
+      } else {
+        return this.formatEuropeanDate(date);
+      }
+    },
+    formatAmericanDate(date) {
+      // Logic to format the date in MM/DD/YYYY
+      // Example: return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const [year, month, day] = date.split('-');
+      return `${month}/${day}/${year}`;
+    },
+    formatEuropeanDate(date) {
+      // Logic to format the date in DD.MM.YYYY
+      // Example: return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const [year, month, day] = date.split('-');
+      return `${day}.${month}.${year}`;
+    },
+    handleDateChange(newDate) {
+      this.date = newDate;
+      this.formattedDate = this.formatDate(newDate);
+    },
 
   watch: {
     selectedDateFormat(newFormat) {
-      this.formattedDate = this.formatDate(this.date);
+      this.computedFormattedDate = this.formatDate(this.date);
     },
     /* location(newVal, oldVal) {
        // Check if the location has changed
@@ -366,38 +388,14 @@ export default {
        console.log("---------------SEARCH", this.searchInput)
      }*/
   },
-
-  mounted() {
-    this.$emit('updateVersion', 'WeatherQueryVueTwo');
-    console.log("mounted")
-    //this.$store.commit('controller/SET_PAGE', 'one')
-    /*console.log("created")
-    this.$store.commit('alerts/SET_TIMEOUT', 3000)
-    this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/
-  },
-  formatDate(date) {
-    if (this.selectedDateFormat === 'American') {
-      return this.formatAmericanDate(date);
-    } else {
-      return this.formatEuropeanDate(date);
-    }
-  },
-  formatAmericanDate(date) {
-    // Logic to format the date in MM/DD/YYYY
-    // Example: return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    const [year, month, day] = date.split('-');
-    return `${month}/${day}/${year}`;
-  },
-  formatEuropeanDate(date) {
-    // Logic to format the date in DD.MM.YYYY
-    // Example: return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    const [year, month, day] = date.split('-');
-    return `${day}.${month}.${year}`;
-  },
-  handleDateChange(newDate) {
-    this.date = newDate;
-    this.formattedDate = this.formatDate(newDate);
-  },
+    mounted() {
+      this.$emit('updateVersion', 'WeatherQueryVueTwo');
+      console.log("mounted")
+      //this.$store.commit('controller/SET_PAGE', 'one')
+      /*console.log("created")
+      this.$store.commit('alerts/SET_TIMEOUT', 3000)
+      this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/
+    },
 };
 </script>
 

@@ -113,7 +113,7 @@ import { VAutocomplete } from "vuetify/lib";
 
 
 export default {
-  name: 'WeatherQueryVueOne',
+  name: 'WeatherQueryOne',
 
   components: {
     //VAutocomplete
@@ -162,7 +162,7 @@ export default {
     }
   },
   currentVersion() {
-    return 'WeatherQueryVueOne';
+    return 'WeatherQueryOne';
   },
   methods: {
     handleInput(value) {
@@ -328,7 +328,7 @@ export default {
   }
   ,
   mounted() {
-    this.$emit('updateVersion', 'WeatherQueryVueOne');
+    this.$emit('updateVersion', 'WeatherQueryOne');
     console.log("mounted")
     //this.$store.commit('controller/SET_PAGE', 'one')
     /*console.log("created")
