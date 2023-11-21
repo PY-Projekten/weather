@@ -194,6 +194,7 @@ export default {
       }
     },
     computedFormattedDate() {
+      console.log("computedFormattedDate computing for date:", this.date);
       return this.formatDate(this.date);
     },
   },
@@ -338,14 +339,9 @@ export default {
         //this.location = this.searchInput
         this.submitForm()
       }
-    }
-    },
-    created() {
-      this.set_test(1)
-      this.fetchLocations();
-
     },
     formatDate(date) {
+      console.log("formatDate called with date:", date);
       if (this.selectedDateFormat === 'American') {
         return this.formatAmericanDate(date);
       } else {
@@ -353,12 +349,14 @@ export default {
       }
     },
     formatAmericanDate(date) {
+      console.log("formatAmericanDate called with date:", date);
       // Logic to format the date in MM/DD/YYYY
       // Example: return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
       const [year, month, day] = date.split('-');
       return `${month}/${day}/${year}`;
     },
     formatEuropeanDate(date) {
+      console.log("formatEuropeanDate called with date:", date);
       // Logic to format the date in DD.MM.YYYY
       // Example: return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
       const [year, month, day] = date.split('-');
@@ -368,11 +366,16 @@ export default {
       this.date = newDate;
       this.formattedDate = this.formatDate(newDate);
     },
+    },
+    created() {
+      this.set_test(1)
+      this.fetchLocations();
+
+    },
+
+
 
   watch: {
-    selectedDateFormat(newFormat) {
-      this.computedFormattedDate = this.formatDate(this.date);
-    },
     /* location(newVal, oldVal) {
        // Check if the location has changed
        if (oldVal !== newVal) {
@@ -387,7 +390,7 @@ export default {
        }
        console.log("---------------SEARCH", this.searchInput)
      }*/
-  },
+    },
     mounted() {
       this.$emit('updateVersion', 'WeatherQueryVueTwo');
       console.log("mounted")
@@ -396,7 +399,10 @@ export default {
       this.$store.commit('alerts/SET_TIMEOUT', 3000)
       this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/
     },
-};
+    selectedDateFormat(newFormat) {
+      this.computedFormattedDate = this.formatDate(this.date);
+    }
+  };
 </script>
 
 <style scoped>
