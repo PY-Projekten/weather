@@ -12,8 +12,6 @@
         ref="autocomplete"
         v-model="location"
         :items="locationsList"
-
-
         @focus="handleFocus"
         @keydown.enter="show_model($event)"
         @keydown.tab="show_model($event)"
@@ -206,9 +204,9 @@ export default {
     handleInput(value) {
       this.searchInput = value; // Update the searchInput with the new value
       // You might want to clear the input if a valid location is selected from the suggestions
-      if (this.locationsList.includes(value)) {
-        this.searchInput = '';
-      }
+      // if (this.locationsList.includes(value)) {
+      //   this.searchInput = '';
+      // }
     },
     handleBlur() {
 
