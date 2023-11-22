@@ -202,6 +202,7 @@ export default {
     },
   methods: {
     handleInput(value) {
+      console.log('handleInput - New Value:', value);
       this.searchInput = value; // Update the searchInput with the new value
       // You might want to clear the input if a valid location is selected from the suggestions
       // if (this.locationsList.includes(value)) {
@@ -239,12 +240,14 @@ export default {
     },
 
     async submitForm() {
+      console.log('submitForm - Before Submission:', this.searchInput);
       console.log('submitForm is triggered');
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
 
       // New validation logic
       if (!this.validateForm()) {
+        console.log('submitForm - Form Invalid');
         let errorMessage = this.rules.location.find(rule => !rule(this.location)) || 'Invalid input'; // New: if form validation fails // Find the error message
         this.$store.dispatch('alerts/showToast', {
           content: errorMessage,
@@ -310,6 +313,7 @@ export default {
           console.error('Error:', error.message)
         }
       }
+      console.log('submitForm - After Submission:', this.searchInput);
     },
 
     validateForm() {
