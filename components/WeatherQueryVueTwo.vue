@@ -327,17 +327,20 @@ export default {
       // Additional code to show popup
     },
 
-    show_model(e){
-      e.preventDefault()
-      console.log("----------------------------------------",this.$refs.tt)
-      console.log("----------------------------------------",this.searchInput)
-      this.location = this.searchInput
-      if(!this.locationsList.includes(this.searchInput)){
-        this.dialog = true
-        //this.location = this.searchInput
-      }else{
-        //this.location = this.searchInput
-        this.submitForm()
+    show_model(e) {
+      e.preventDefault();
+      // Use nullish coalescing to default to an empty string if searchInput is null or undefined
+      this.location = this.searchInput ?? '';
+      // Check if the search input is empty and the event is from pressing enter
+      if ((this.searchInput?.trim() === '' || this.searchInput == null) && e.type === 'keydown' && e.key === 'Enter') {
+        // If empty or null and enter key is pressed, do not show the dialog and return early
+        return;
+      }
+      // Existing logic to show the dialog or submit the form
+      if (!this.locationsList.includes(this.searchInput)) {
+        this.dialog = true;
+      } else {
+        this.submitForm();
       }
     },
     formatDate(date) {
