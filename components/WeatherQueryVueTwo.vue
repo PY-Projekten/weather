@@ -160,6 +160,7 @@ export default {
       rules: {
         location: [
           v => !!v || 'Location is required', // Check if the location is not empty
+          v => this.locationsList.includes(v) || 'Location is invalid', // Check if the location is valid
           // Add more rules for location if needed
         ],
         date: [
@@ -246,8 +247,9 @@ export default {
 
       // New validation logic
       if (!this.validateForm()) {
+        let errorMessage = this.rules.location.find(rule => !rule(this.location)) || 'Invalid input'; // New: if form validation fails // Find the error message
         this.$store.dispatch('alerts/showToast', {
-          content: 'Invalid input',
+          content: errorMessage,
           color: 'error',
         });
         return;
