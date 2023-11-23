@@ -257,15 +257,15 @@ export default {
       console.log("form data:", this.location, this.date, this.hour);
 
       // Test validation logic
-      if (!this.validateForm()) {
-        console.log('submitForm - Form Invalid');
-        let errorMessage = this.rules.location.find(rule => !rule(this.location)) || 'Invalid input'; // New: if form validation fails // Find the error message
-        this.$store.dispatch('alerts/showToast', {
-          content: errorMessage,
-          color: 'error',
-        });
-        return;
-      }
+      // if (!this.validateForm()) {
+      //   console.log('submitForm - Form Invalid');
+      //   let errorMessage = this.rules.location.find(rule => !rule(this.location)) || 'Invalid input'; // New: if form validation fails // Find the error message
+      //   this.$store.dispatch('alerts/showToast', {
+      //     content: errorMessage,
+      //     color: 'error',
+      //   });
+      //   return;
+      // }
 
       // Simplified version
       // if (!this.location) {
@@ -286,11 +286,11 @@ export default {
       // }
 
       // New: show_model access version
-      // if (!this.locationsList.includes(this.location)) {
-      //   // Call show_model to handle new locations
-      //   this.show_model(new Event('custom'));
-      //   return;
-      // }
+      if (!this.locationsList.includes(this.location)) {
+        // Call show_model to handle new locations
+        this.show_model(new Event('custom'));
+        return;
+      }
 
       try {
         // Define the data to be sent in the POST request
@@ -362,16 +362,16 @@ export default {
     // },
     //
     // // new method
-    validateForm() {
-      const isLocationValid = this.rules.location.every(rule => rule(this.location));
-      const isDateValid = this.rules.date.every(rule => rule(this.date));
-      const isHourValid = this.rules.hour.every(rule => rule(this.hour));
-      return isLocationValid && isDateValid && isHourValid;
-    },
-
-    // isValidLocationInput() {
-    //   return this.rules.location.every(rule => rule(this.location));
+    // validateForm() {
+    //   const isLocationValid = this.rules.location.every(rule => rule(this.location));
+    //   const isDateValid = this.rules.date.every(rule => rule(this.date));
+    //   const isHourValid = this.rules.hour.every(rule => rule(this.hour));
+    //   return isLocationValid && isDateValid && isHourValid;
     // },
+
+    isValidLocationInput() {
+      return this.rules.location.every(rule => rule(this.location));
+    },
 
 
     showPopup(message) {
@@ -383,48 +383,25 @@ export default {
     },
 
     //
-    show_model(e) {
-      e.preventDefault();
-      this.location = this.searchInput ?? '';
-
-      // Check if the search input is empty
-      if (!this.location.trim() || this.location == null) {
-        // If empty, remove focus from the autocomplete and return early
-        if (this.$refs.autocomplete) {
-          this.$refs.autocomplete.blur();
-        }
-        return;
-      }
-
-      // Check if the location contains only letters and spaces and is less than or equal to 20 characters
-      const isValidCharacters = /^[a-zA-Z\s]+$/.test(this.location);
-      const isValidLength = this.location.length <= 20;
-
-      if (!isValidCharacters || !isValidLength) {
-        // If invalid, remove focus from the autocomplete and return early
-        if (this.$refs.autocomplete) {
-          this.$refs.autocomplete.blur();
-        }
-        return;
-      }
-
-      // Show the dialog or submit the form based on whether the location is in the list
-      if (!this.locationsList.includes(this.location)) {
-        this.dialog = true;
-      } else {
-        this.submitForm();
-      }
-    },
-
     // show_model(e) {
     //   e.preventDefault();
-    //   console.log("----------------------------------------",this.$refs.tt)
-    //   console.log("----------------------------------------",this.searchInput)
-    //
     //   this.location = this.searchInput ?? '';
     //
-    //   // Remove focus from the autocomplete if the input is empty or invalid
-    //   if (!this.location.trim() || this.location == null || !this.isValidLocationInput()) {
+    //   // Check if the search input is empty
+    //   if (!this.location.trim() || this.location == null) {
+    //     // If empty, remove focus from the autocomplete and return early
+    //     if (this.$refs.autocomplete) {
+    //       this.$refs.autocomplete.blur();
+    //     }
+    //     return;
+    //   }
+    //
+    //   // Check if the location contains only letters and spaces and is less than or equal to 20 characters
+    //   const isValidCharacters = /^[a-zA-Z\s]+$/.test(this.location);
+    //   const isValidLength = this.location.length <= 20;
+    //
+    //   if (!isValidCharacters || !isValidLength) {
+    //     // If invalid, remove focus from the autocomplete and return early
     //     if (this.$refs.autocomplete) {
     //       this.$refs.autocomplete.blur();
     //     }
@@ -438,6 +415,39 @@ export default {
     //     this.submitForm();
     //   }
     // },
+
+    show_model(e) {
+      e.preventDefault();
+
+      console.log("----------------------------------------",this.$refs.tt)
+      console.log("----------------------------------------",this.searchInput)
+
+      this.location = this.searchInput ?? '';
+
+      // Check if the search input is empty and the event is from pressing enter
+      if ((this.searchInput?.trim() === '' || this.searchInput == null) && e.type === 'keydown' && e.key === 'Enter') {
+        // If empty or null and enter key is pressed, do not show the dialog and return early
+        if (this.$refs.autocomplete) {
+          this.$refs.autocomplete.blur();
+        }
+        return;
+      }
+
+      // Remove focus from the autocomplete if the input is empty or invalid
+      if (!this.location.trim() || this.location == null || !this.isValidLocationInput()) {
+        if (this.$refs.autocomplete) {
+          this.$refs.autocomplete.blur();
+        }
+        return;
+      }
+
+      // Show the dialog or submit the form based on whether the location is in the list
+      if (!this.locationsList.includes(this.location)) {
+        this.dialog = true;
+      } else {
+        this.submitForm();
+      }
+    },
 
 
     // show_model(e) {

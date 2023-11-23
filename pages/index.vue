@@ -48,12 +48,23 @@ export default {
     page() {
       return this.$store.state.controller.page;
     },
-    currentVersion() {
-      switch (this.page) {
-        case 'one': return 'WeatherQueryOne';
-        case 'two': return 'WeatherQueryVueTwo';
-        case 'three': return 'WeatherQueryVueThree'; // Add this case
-        default: return 'Unknown';
+    currentVersion: {
+      get() {
+        switch (this.page) {
+          case 'one':
+            return 'WeatherQueryOne';
+          case 'two':
+            return 'WeatherQueryVueTwo';
+          case 'three':
+            return 'WeatherQueryVueThree';
+          default:
+            return 'Unknown'; // or any default value you prefer
+        }
+      },
+      set(newValue) {
+        // The setter is not required to do anything in this case,
+        // but it's necessary to include it to avoid Vue warnings.
+        // You can leave it empty or add some logic if needed.
       }
     }
   },
