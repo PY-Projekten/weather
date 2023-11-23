@@ -10,7 +10,8 @@
     <v-row justify="center" align="center">
       <v-col>
         <weather-query-one v-if="page === 'one'" :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
-        <weather-query-vue-two v-else :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
+        <weather-query-vue-two v-else-if="page === 'two'" :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
+        <weather-query-vue-three v-else-if="page === 'three'" :test="test" :set_test="set_test" @updateVersion="updateCurrentVersion"/>
 
       </v-col>
     </v-row>
@@ -20,12 +21,14 @@
 <script>
 import WeatherQueryOne from "@/components/WeatherQueryOne.vue";
 import WeatherQueryVueTwo from "@/components/WeatherQueryVueTwo.vue";
+import WeatherQueryVueThree from "@/components/WeatherQueryVueThree.vue";
 
 export default {
   name: 'IndexPage',
   components: {
     WeatherQueryOne,
-    WeatherQueryVueTwo
+    WeatherQueryVueTwo,
+    WeatherQueryVueThree
   },
   created() {
     this.test = 10;
@@ -38,16 +41,21 @@ export default {
   },
   data() {
     return {
-      test: 9,
-      currentVersion() {
-        return this.page === 'one' ? 'WeatherQueryOne' : 'WeatherQueryVueTwo';
-      }
+      test: 9
     };
   },
   computed: {
     page() {
       return this.$store.state.controller.page;
     },
+    currentVersion() {
+      switch (this.page) {
+        case 'one': return 'WeatherQueryOne';
+        case 'two': return 'WeatherQueryVueTwo';
+        case 'three': return 'WeatherQueryVueThree'; // Add this case
+        default: return 'Unknown';
+      }
+    }
   },
   methods: {
     // ... your existing methods ...
@@ -58,7 +66,14 @@ export default {
       this.test = val;
     },
     switchPage() {
-      const newPage = this.page === 'one' ? 'two' : 'one';
+      let newPage = 'one';
+      if (this.page === 'one') {
+        newPage = 'two';
+      } else if (this.page === 'two') {
+        newPage = 'three';
+      } else if (this.page === 'three') {
+        newPage = 'one';
+      }
       this.$store.commit('controller/SET_PAGE', newPage);
     }
   }

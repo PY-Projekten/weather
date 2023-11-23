@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <h1>Weather Query</h1>
@@ -11,8 +12,6 @@
         ref="autocomplete"
         v-model="location"
         :items="locationsList"
-
-
         @focus="handleFocus"
         @keydown.enter="show_model($event)"
         @keydown.tab="show_model($event)"
@@ -27,10 +26,40 @@
       </v-autocomplete>
     </div>
 
-    <div>
-      <label for="date">Date:</label>
-      <input type="date" v-model="date" />
-    </div>
+    <!--    <div>-->
+    <!--      <label for="date">Date:</label>-->
+    <!--      <input type="date" v-model="date" />-->
+    <!--    </div>-->
+
+    <!-- Date Format Selector -->
+    <v-select
+      :items="['American', 'European']"
+      label="Select Date Format"
+      v-model="selectedDateFormat"
+    ></v-select>
+
+    <!-- Date Picker -->
+    <v-menu
+      ref="menu"
+      v-model="menu"
+      :close-on-content-click="false"
+      :nudge-right="40"
+      transition="scale-transition"
+      offset-y
+      min-width="290px"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-text-field
+          v-model="computedFormattedDate"
+          label="Pick a date"
+          prepend-icon="mdi-calendar"
+          readonly
+          v-bind="attrs"
+          v-on="on"
+        ></v-text-field>
+      </template>
+      <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
+    </v-menu>
 
     <div>
       <label for="hour">Hour:</label>
@@ -127,20 +156,47 @@ export default {
   data() {
     return {
       rules: {
-        location: [],
+        location: [
+          // v => !!v || 'Location is required', // Check if the location is not empty
+          // // v => this.locationsList.includes(v) || 'Location is invalid', // Check if the location is valid
+          // v => /^[a-zA-Z\s,]+$/.test(v) || 'Location must only contain letters, spaces, and commas',
+          // v => v.length <= 20 || 'Location must be less than 20 characters',
+          // // v => !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
+
+          // ** New Modification: **
+          // each validation step first checks if v is null, undefined, or an empty string.
+          // If so, it bypasses the rest of the validation.
+          // This should help prevent the TypeError
+          v => v !== null && v !== undefined && v !== '' || 'Location is required',
+          v => v === null || v === undefined || v === '' || /^[a-zA-Z\s,]+$/.test(v) || 'Location must only contain letters, spaces, and commas',
+          v => v === null || v === undefined || v === '' || v.length <= 20 || 'Location must be less than 20 characters',
+          v => v === null || v === undefined || v === '' || !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
+
+
+        ],
+        date: [
+          v => !!v || 'Date is required',
+          v => /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$/.test(v) || 'Invalid date format',
+        ],
+        hour: [
+          v => v === '' || /^(\d{2}:\d{2}(:\d{2})?)$/.test(v) || 'Invalid hour format',
+          // Add more rules for hour if needed
+        ],
       },
       dialog: false,
       searchInput: '',
       location: '',
-      date: new Date().toISOString().slice(0, 10), // Set default date to current date
+      menu: false, // Controls the visibility of the date picker
+      date: new Date().toISOString().substr(0, 10), // Stores the selected date
       hour: '',
       locationsList: [], // populate this list from your API
       response_data: [], // populate this with the query results from your API
-      /*       noDataResult: true */
       errorMessage: '',
       errorDialog: false,
       saveDialog: false,
-      popupMessage: ''
+      popupMessage: '',
+      selectedDateFormat: 'American', // Default selection
+
     };
   },
   computed: {
@@ -148,10 +204,17 @@ export default {
       get(){
         return this.test
       }
-    }
+    },
+    computedFormattedDate() {
+      return this.formatDate(this.date);
+    },
+  },
+  currentVersion() {
+    return 'WeatherQueryVueThree';
   },
   methods: {
     handleInput(value) {
+      console.log('handleInput - New Value:', value);
       this.searchInput = value; // Update the searchInput with the new value
       // You might want to clear the input if a valid location is selected from the suggestions
       if (this.locationsList.includes(value)) {
@@ -192,6 +255,43 @@ export default {
       console.log('submitForm is triggered');
       this.response_data = []
       console.log("form data:", this.location, this.date, this.hour);
+
+      // Test validation logic
+      if (!this.validateForm()) {
+        console.log('submitForm - Form Invalid');
+        let errorMessage = this.rules.location.find(rule => !rule(this.location)) || 'Invalid input'; // New: if form validation fails // Find the error message
+        this.$store.dispatch('alerts/showToast', {
+          content: errorMessage,
+          color: 'error',
+        });
+        return;
+      }
+
+      // Simplified version
+      // if (!this.location) {
+      //   this.$store.dispatch('alerts/showToast', {
+      //     content: 'Location is required',
+      //     color: 'error',
+      //   });
+      //   return;
+      // }
+
+      // Older version from WeatherQueryOne
+      // if (!this.validateForm()) {
+      //   this.$store.dispatch('alerts/showToast', {
+      //     content: 'Invalid input',
+      //     color: 'error',
+      //   });
+      //   return;
+      // }
+
+      // New: show_model access version
+      // if (!this.locationsList.includes(this.location)) {
+      //   // Call show_model to handle new locations
+      //   this.show_model(new Event('custom'));
+      //   return;
+      // }
+
       try {
         // Define the data to be sent in the POST request
         const postData = {
@@ -213,21 +313,7 @@ export default {
           this.errorMessage = response.data.message; // Display the error message from the backend
           console.error(response.data.message);
         }
-        // } catch (error) {
-        //   // Handle errors or other issues with the request
-        //   if (error.response) {
-        //     this.errorMessage = error.response.data.message; //Display the custom message from the backend
-        //     console.error('Error:', error.response.data.message);
-        //   } else if (error.request) {
-        //     // The request was made but no response was received
-        //     this.errorMessage = 'No response from the server';
-        //     console.error('Error: No response from the server');
-        //   } else {
-        //     // Something happened in setting up the request that triggered an Error
-        //     this.errorMessage = 'Error setting up the request';
-        //     console.error('Error:', error.message)
-        //   }
-        // }
+
       } catch (error) {
         // Handle errors or other issues with the request
         if (error.response) {
@@ -249,7 +335,44 @@ export default {
           console.error('Error:', error.message)
         }
       }
+      console.log('submitForm - After Submission:', this.searchInput);
     },
+
+    // new method
+    // processLocation() {
+    //   // Remove focus from autocomplete if the input is empty or invalid
+    //   if (!this.location.trim() || !this.validateLocation(this.location)) {
+    //     if (this.$refs.autocomplete) {
+    //       this.$refs.autocomplete.blur();
+    //     }
+    //     return false;
+    //   }
+    //
+    //   // Show the dialog if the location is not in the list
+    //   if (!this.locationsList.includes(this.location)) {
+    //     this.dialog = true;
+    //     return false;
+    //   }
+    //
+    //   return true;
+    // },
+    //
+    // validateLocation(location) {
+    //   return this.rules.location.every(rule => rule(location));
+    // },
+    //
+    // // new method
+    validateForm() {
+      const isLocationValid = this.rules.location.every(rule => rule(this.location));
+      const isDateValid = this.rules.date.every(rule => rule(this.date));
+      const isHourValid = this.rules.hour.every(rule => rule(this.hour));
+      return isLocationValid && isDateValid && isHourValid;
+    },
+
+    // isValidLocationInput() {
+    //   return this.rules.location.every(rule => rule(this.location));
+    // },
+
 
     showPopup(message) {
       // Implement the logic to show a popup with the given message
@@ -259,25 +382,108 @@ export default {
       // Additional code to show popup
     },
 
-    show_model(e){
-      e.preventDefault()
-      console.log("----------------------------------------",this.$refs.tt)
-      console.log("----------------------------------------",this.searchInput)
-      this.location = this.searchInput
-      if(!this.locationsList.includes(this.searchInput)){
-        this.dialog = true
-        //this.location = this.searchInput
-      }else{
-        //this.location = this.searchInput
-        this.submitForm()
+    //
+    show_model(e) {
+      e.preventDefault();
+      this.location = this.searchInput ?? '';
+
+      // Check if the search input is empty
+      if (!this.location.trim() || this.location == null) {
+        // If empty, remove focus from the autocomplete and return early
+        if (this.$refs.autocomplete) {
+          this.$refs.autocomplete.blur();
+        }
+        return;
       }
-    }
+
+      // Check if the location contains only letters and spaces and is less than or equal to 20 characters
+      const isValidCharacters = /^[a-zA-Z\s]+$/.test(this.location);
+      const isValidLength = this.location.length <= 20;
+
+      if (!isValidCharacters || !isValidLength) {
+        // If invalid, remove focus from the autocomplete and return early
+        if (this.$refs.autocomplete) {
+          this.$refs.autocomplete.blur();
+        }
+        return;
+      }
+
+      // Show the dialog or submit the form based on whether the location is in the list
+      if (!this.locationsList.includes(this.location)) {
+        this.dialog = true;
+      } else {
+        this.submitForm();
+      }
+    },
+
+    // show_model(e) {
+    //   e.preventDefault();
+    //   console.log("----------------------------------------",this.$refs.tt)
+    //   console.log("----------------------------------------",this.searchInput)
+    //
+    //   this.location = this.searchInput ?? '';
+    //
+    //   // Remove focus from the autocomplete if the input is empty or invalid
+    //   if (!this.location.trim() || this.location == null || !this.isValidLocationInput()) {
+    //     if (this.$refs.autocomplete) {
+    //       this.$refs.autocomplete.blur();
+    //     }
+    //     return;
+    //   }
+    //
+    //   // Show the dialog or submit the form based on whether the location is in the list
+    //   if (!this.locationsList.includes(this.location)) {
+    //     this.dialog = true;
+    //   } else {
+    //     this.submitForm();
+    //   }
+    // },
+
+
+    // show_model(e) {
+    //   e.preventDefault();
+    //   this.location = this.searchInput ?? '';
+    //
+    //   if (!this.processLocation()) {
+    //     return;
+    //   }
+    //
+    //   this.submitForm();
+    // },
+
+
+
+    formatDate(date) {
+      if (this.selectedDateFormat === 'American') {
+        return this.formatAmericanDate(date);
+      } else {
+        return this.formatEuropeanDate(date);
+      }
+    },
+    formatAmericanDate(date) {
+      // Logic to format the date in MM/DD/YYYY
+      // Example: return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const [year, month, day] = date.split('-');
+      return `${month}/${day}/${year}`;
+    },
+    formatEuropeanDate(date) {
+      // Logic to format the date in DD.MM.YYYY
+      // Example: return new Date(date).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const [year, month, day] = date.split('-');
+      return `${day}.${month}.${year}`;
+    },
+    handleDateChange(newDate) {
+      this.date = newDate;
+      this.formattedDate = this.formatDate(newDate);
+    },
   },
   created() {
     this.set_test(1)
     this.fetchLocations();
 
   },
+
+
 
   watch: {
     /* location(newVal, oldVal) {
@@ -294,14 +500,20 @@ export default {
        }
        console.log("---------------SEARCH", this.searchInput)
      }*/
-  }
-  ,
+  },
   mounted() {
+    this.$emit('updateVersion', 'WeatherQueryVueThree');
     console.log("mounted")
-    this.$store.commit('controller/SET_PAGE', 'one')
+    //this.$store.commit('controller/SET_PAGE', 'one')
     /*console.log("created")
     this.$store.commit('alerts/SET_TIMEOUT', 3000)
     this.$store.commit('alerts/SHOW_TOAST', {content: 'CREATED', color: 'error'})*/
+  },
+  selectedDateFormat(newFormat) {
+    this.computedFormattedDate = this.formatDate(this.date);
+  },
+  searchInput(newVal, oldVal) {
+    console.log('searchInput changed from', oldVal, 'to', newVal);
   },
 };
 </script>

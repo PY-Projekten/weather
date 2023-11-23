@@ -130,7 +130,7 @@ export default {
       rules: {
         location: [
           v => !!v || 'Location is required', // Check if the location is not empty
-          // Add more rules for location if needed
+          // // Add more rules for location if needed
         ],
         date: [
           v => !!v || 'Date is required',
