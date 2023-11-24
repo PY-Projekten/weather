@@ -164,18 +164,15 @@ export default {
           v => v !== null && v !== undefined && v !== '' || 'Location is required',
           v => v === null || v === undefined || v === '' || /^[a-zA-Z\s,]+$/.test(v) || 'Location must only contain letters, spaces, and commas',
           v => v === null || v === undefined || v === '' || v.length <= 20 || 'Location must be less than 20 characters',
-          v => v === null || v === undefined || v === '' || !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
+          // v => v === null || v === undefined || v === '' || !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
 
 
         ],
         date: [
-          // v => !!v || 'Date is required',
-          // v => /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$/.test(v) || 'Invalid date format',
           v => !!v || 'Date is required',
           v => /^(\\d{4}-\\d{2}-\\d{2}|\\d{2}\\.\\d{2}\\.\\d{4})$/.test(v) || 'Date must be in "yyyy-mm-dd" or "dd.mm.yyyy" format',
         ],
         hour: [
-          // v => v === '' || /^(\d{2}:\d{2}(:\d{2})?)$/.test(v) || 'Invalid hour format',
           v => v === '' || /^(\\d{2}:\\d{2}(?::\\d{2})?)$/.test(v) || 'Hour must be in "hh:mm" or "hh:mm:ss" format',
         ],
       },
