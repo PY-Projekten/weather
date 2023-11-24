@@ -157,12 +157,6 @@ export default {
     return {
       rules: {
         location: [
-          // v => !!v || 'Location is required', // Check if the location is not empty
-          // // v => this.locationsList.includes(v) || 'Location is invalid', // Check if the location is valid
-          // v => /^[a-zA-Z\s,]+$/.test(v) || 'Location must only contain letters, spaces, and commas',
-          // v => v.length <= 20 || 'Location must be less than 20 characters',
-          // // v => !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
-
           // ** New Modification: **
           // each validation step first checks if v is null, undefined, or an empty string.
           // If so, it bypasses the rest of the validation.
@@ -175,12 +169,14 @@ export default {
 
         ],
         date: [
+          // v => !!v || 'Date is required',
+          // v => /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$/.test(v) || 'Invalid date format',
           v => !!v || 'Date is required',
-          v => /^(\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}\.\d{4})$/.test(v) || 'Invalid date format',
+          v => /^(\\d{4}-\\d{2}-\\d{2}|\\d{2}\\.\\d{2}\\.\\d{4})$/.test(v) || 'Date must be in "yyyy-mm-dd" or "dd.mm.yyyy" format',
         ],
         hour: [
-          v => v === '' || /^(\d{2}:\d{2}(:\d{2})?)$/.test(v) || 'Invalid hour format',
-          // Add more rules for hour if needed
+          // v => v === '' || /^(\d{2}:\d{2}(:\d{2})?)$/.test(v) || 'Invalid hour format',
+          v => v === '' || /^(\\d{2}:\\d{2}(?::\\d{2})?)$/.test(v) || 'Hour must be in "hh:mm" or "hh:mm:ss" format',
         ],
       },
       dialog: false,
@@ -267,31 +263,6 @@ export default {
         return;
       }
 
-      // Simplified version
-      // if (!this.location) {
-      //   this.$store.dispatch('alerts/showToast', {
-      //     content: 'Location is required',
-      //     color: 'error',
-      //   });
-      //   return;
-      // }
-
-      // Older version from WeatherQueryOne
-      // if (!this.validateForm()) {
-      //   this.$store.dispatch('alerts/showToast', {
-      //     content: 'Invalid input',
-      //     color: 'error',
-      //   });
-      //   return;
-      // }
-
-      // New: show_model access version
-      // if (!this.locationsList.includes(this.location)) {
-      //   // Call show_model to handle new locations
-      //   this.show_model(new Event('custom'));
-      //   return;
-      // }
-
       try {
         // Define the data to be sent in the POST request
         const postData = {
@@ -338,40 +309,12 @@ export default {
       console.log('submitForm - After Submission:', this.searchInput);
     },
 
-    // new method
-    // processLocation() {
-    //   // Remove focus from autocomplete if the input is empty or invalid
-    //   if (!this.location.trim() || !this.validateLocation(this.location)) {
-    //     if (this.$refs.autocomplete) {
-    //       this.$refs.autocomplete.blur();
-    //     }
-    //     return false;
-    //   }
-    //
-    //   // Show the dialog if the location is not in the list
-    //   if (!this.locationsList.includes(this.location)) {
-    //     this.dialog = true;
-    //     return false;
-    //   }
-    //
-    //   return true;
-    // },
-    //
-    // validateLocation(location) {
-    //   return this.rules.location.every(rule => rule(location));
-    // },
-    //
-    // // new method
     validateForm() {
       const isLocationValid = this.rules.location.every(rule => rule(this.location));
       const isDateValid = this.rules.date.every(rule => rule(this.date));
       const isHourValid = this.rules.hour.every(rule => rule(this.hour));
       return isLocationValid && isDateValid && isHourValid;
     },
-
-    // isValidLocationInput() {
-    //   return this.rules.location.every(rule => rule(this.location));
-    // },
 
 
     showPopup(message) {
@@ -415,42 +358,6 @@ export default {
         this.submitForm();
       }
     },
-
-    // show_model(e) {
-    //   e.preventDefault();
-    //   console.log("----------------------------------------",this.$refs.tt)
-    //   console.log("----------------------------------------",this.searchInput)
-    //
-    //   this.location = this.searchInput ?? '';
-    //
-    //   // Remove focus from the autocomplete if the input is empty or invalid
-    //   if (!this.location.trim() || this.location == null || !this.isValidLocationInput()) {
-    //     if (this.$refs.autocomplete) {
-    //       this.$refs.autocomplete.blur();
-    //     }
-    //     return;
-    //   }
-    //
-    //   // Show the dialog or submit the form based on whether the location is in the list
-    //   if (!this.locationsList.includes(this.location)) {
-    //     this.dialog = true;
-    //   } else {
-    //     this.submitForm();
-    //   }
-    // },
-
-
-    // show_model(e) {
-    //   e.preventDefault();
-    //   this.location = this.searchInput ?? '';
-    //
-    //   if (!this.processLocation()) {
-    //     return;
-    //   }
-    //
-    //   this.submitForm();
-    // },
-
 
 
     formatDate(date) {

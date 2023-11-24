@@ -17,7 +17,7 @@
 - **Testdateien:**
   - `WeatherQuery.spec.js`: Unit-Tests für die `WeatherQuery.vue`-Komponente.
 
-## WeatherQuery.vue
+## WeatherQueryOne.vue
 - **Funktionalität:** Ermöglicht Benutzern, Wetterdaten basierend auf Standort, Datum und Stunde abzufragen.
 - **Wesentliche Elemente:**
   - Eingabefeld für den Standort (v-autocomplete)
@@ -69,7 +69,7 @@
 - **Test Files:**
   - `WeatherQuery.spec.js`: Unit tests for the `WeatherQuery.vue` component.
 
-## WeatherQuery.vue
+## WeatherQueryOne.vue
 - **Functionality:** Allows users to query weather data based on location, date, and hour.
 - **Key Elements:**
   - Location input field (v-autocomplete)
