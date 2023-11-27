@@ -35,8 +35,6 @@
       :scheme="locationScheme"
     />
 
-
-
     <!-- Date Format Selector -->
     <v-select
       :items="['American', 'European']"
@@ -151,7 +149,7 @@ export default {
   name: 'WeatherQueryVueThree',
 
   components: {
-    AwesomeObjectAction
+    AwesomeObjectAction // Register the component
     //VAutocomplete
   },
   props: {
@@ -197,7 +195,12 @@ export default {
       saveDialog: false,
       popupMessage: '',
       selectedDateFormat: 'American', // Default selection
-
+      //awesome-object-action data properties
+      selectedLocation: '',
+      locationScheme: [
+        {name: 'name', desc: 'Location name'},
+        // Define other attributes as needed
+      ],
     };
   },
   computed: {
@@ -214,6 +217,17 @@ export default {
     return 'WeatherQueryVueThree';
   },
   methods: {
+    // awesome-object-action methods
+    editLocation(location) {
+
+    },
+    createLocation(location) {
+
+    },
+    deleteLocation(location) {
+
+    },
+
     handleInput(value) {
       console.log('handleInput - New Value:', value);
       this.searchInput = value; // Update the searchInput with the new value
