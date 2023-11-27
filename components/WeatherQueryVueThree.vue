@@ -26,10 +26,6 @@
       </v-autocomplete>
     </div>
 
-    <!--    <div>-->
-    <!--      <label for="date">Date:</label>-->
-    <!--      <input type="date" v-model="date" />-->
-    <!--    </div>-->
 
     <!-- Date Format Selector -->
     <v-select
