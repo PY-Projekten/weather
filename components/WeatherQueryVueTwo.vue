@@ -143,6 +143,7 @@
 import { VAutocomplete } from "vuetify/lib";
 //import vSelect from "vue-select";
 import AwesomeObjectAction from "@/components/awesome-object-action.vue";
+import { locationService } from '@/services/locationService';
 
 
 export default {
@@ -199,7 +200,9 @@ export default {
       selectedLocation: '',
       locationScheme: [
         {name: 'name', desc: 'Location name'},
-        // Define other attributes as needed
+        // ** Define other attributes as needed **
+        // { name: 'latitude', desc: 'Latitude' },
+        // { name: 'longitude', desc: 'Longitude' },
       ],
     };
   },
@@ -218,15 +221,32 @@ export default {
   },
   methods: {
     // awesome-object-action methods
-    editLocation(location) {
+    async editLocation(location) {
+      try {
+        // Call the updateLocation method from locationService
+        const response = await locationService.updateLocation(this$axios, location.id, location);
+        // Handle success - e.g., update UI, show message
+      } catch (error) {
+        // Handle error
+      }
+    },
+    async createLocation(locationData) {
+      try {
+        await locationService.createLocation(this$axios, location);
+        // Handle success
+      } catch (error) {
+        // Handle error
+      }
+    },
+    async deleteLocation(location) {
 
     },
-    createLocation(location) {
 
-    },
-    deleteLocation(location) {
-
-    },
+    // async listLocations(location);
+    // try {
+    //   await locationService.listLocations(this$axios, location)
+    // }
+    // // ** End of awesome-object-action method section **
 
     handleInput(value) {
       console.log('handleInput - New Value:', value);
