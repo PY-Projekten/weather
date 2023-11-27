@@ -201,8 +201,8 @@ export default {
       locationScheme: [
         {name: 'name', desc: 'Location name'},
         // ** Define other attributes as needed **
-        // { name: 'latitude', desc: 'Latitude' },
-        // { name: 'longitude', desc: 'Longitude' },
+        { name: 'latitude', desc: 'Latitude' },
+        { name: 'longitude', desc: 'Longitude' },
       ],
     };
   },
@@ -221,13 +221,40 @@ export default {
   },
   methods: {
     // awesome-object-action methods
+    // async editLocation(location) {
+    //   try {
+    //     // Call the updateLocation method from locationService
+    //     const response = await locationService.updateLocation(this$axios, location.id, location);
+    //     // Handle success - e.g., update UI, show message
+    //   } catch (error) {
+    //     // Handle error
+    //   }
+    // },
     async editLocation(location) {
       try {
-        // Call the updateLocation method from locationService
-        const response = await locationService.updateLocation(this$axios, location.id, location);
+        const updatedLocation = {
+          name: location.name,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        };
+        const response = await locationService.updateLocation(this.$axios, location.id, updatedLocation);
+
         // Handle success - e.g., update UI, show message
+        // Handle success
+        await this.fetchLocations(); // Refresh the locations list
+        this.$store.dispatch('alerts/showToast', {
+          content: 'Location updated successfully',
+          color: 'success',
+        });
+        // Refresh the locations list
+        await this.fetchLocations();
       } catch (error) {
         // Handle error
+        console.error('Error updating location:', error);
+        this.$store.dispatch('alerts/showToast', {
+          content: 'Error updating location',
+          color: 'error',
+        });
       }
     },
     async createLocation(locationData) {
