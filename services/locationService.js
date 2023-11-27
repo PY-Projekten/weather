@@ -12,7 +12,7 @@ export const locationService= {
     return $axios.put(`/locations/${id}/`, locationData);
   },
   editLocation($axios, id, locationData) {
-    return $axios.delete('/locations/', locationData);
+    return $axios.put('/locations/', locationData);
   },
   deleteLocation($axios, id) {
     return $axios.delete(`/locations/${id}/`);

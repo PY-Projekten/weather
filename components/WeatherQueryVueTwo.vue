@@ -20,11 +20,25 @@
         placeholder="Select or type a location"
         :rules="rules.location"
       >
+        <template v-slot:item="slotProps">
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>{{ slotProps.item.name }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn icon @click="openEditDialog(slotProps.item)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </template>
         <template v-slot:no-data>
           Data does not yet exist in List.  If you have entered in a new Location, press ENTER
         </template>
       </v-autocomplete>
     </div>
+
+
 
     <!-- awesome-object-action component -->
     <awesome-object-action
@@ -135,6 +149,33 @@
         </v-card>
       </v-dialog>
     </template>
+
+    <!-- Edit Location Dialog -->
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Edit Location</v-card-title>
+        <v-card-text>
+          <v-text-field
+            label="Location Name"
+            v-model="selectedLocation.name"
+          ></v-text-field>
+          <v-text-field
+            label="Latitude"
+            v-model="selectedLocation.latitude"
+          ></v-text-field>
+          <v-text-field
+            label="Longitude"
+            v-model="selectedLocation.longitude"
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="editDialog = false">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="editLocation(selectedLocation)">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -197,7 +238,8 @@ export default {
       popupMessage: '',
       selectedDateFormat: 'American', // Default selection
       //awesome-object-action data properties
-      selectedLocation: '',
+      editDialog: false,
+      selectedLocation: '', // This will hold the location being edited
       locationScheme: [
         {name: 'name', desc: 'Location name'},
         // ** Define other attributes as needed **
@@ -220,36 +262,23 @@ export default {
     return 'WeatherQueryVueThree';
   },
   methods: {
-    // awesome-object-action methods
-    // async editLocation(location) {
-    //   try {
-    //     // Call the updateLocation method from locationService
-    //     const response = await locationService.updateLocation(this$axios, location.id, location);
-    //     // Handle success - e.g., update UI, show message
-    //   } catch (error) {
-    //     // Handle error
-    //   }
-    // },
+    // *** awesome-object-action methods ***
+
     async editLocation(location) {
       try {
-        const updatedLocation = {
-          name: location.name,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        };
-        const response = await locationService.updateLocation(this.$axios, location.id, updatedLocation);
+        // Update the location using your API call
+        await locationService.updateLocation(this.$axios, location.id, location);
 
-        // Handle success - e.g., update UI, show message
-        // Handle success
-        await this.fetchLocations(); // Refresh the locations list
+        // Close the dialog and refresh the locations list
+        this.editDialog = false;
+        await this.fetchLocations();
+
+        // Show success message
         this.$store.dispatch('alerts/showToast', {
           content: 'Location updated successfully',
           color: 'success',
         });
-        // Refresh the locations list
-        await this.fetchLocations();
       } catch (error) {
-        // Handle error
         console.error('Error updating location:', error);
         this.$store.dispatch('alerts/showToast', {
           content: 'Error updating location',
@@ -274,6 +303,17 @@ export default {
     //   await locationService.listLocations(this$axios, location)
     // }
     // // ** End of awesome-object-action method section **
+
+    // CRUD operations
+    openEditDialog(location) {
+      // Open the dialog for editing the location
+      // Set the selectedLocation to the location to be edited
+      this.selectedLocation = location;
+      // Open the dialog (assuming you have a dialog variable in your data)
+      this.editDialog = true;
+    },
+
+    // End of CRUD Operations
 
     handleInput(value) {
       console.log('handleInput - New Value:', value);
