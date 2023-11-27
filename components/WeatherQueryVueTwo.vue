@@ -239,7 +239,7 @@ export default {
       selectedDateFormat: 'American', // Default selection
       //awesome-object-action data properties
       editDialog: false,
-      selectedLocation: '', // This will hold the location being edited
+      selectedLocation: {}, // Initialize as an empty object
       locationScheme: [
         {name: 'name', desc: 'Location name'},
         // ** Define other attributes as needed **
@@ -288,7 +288,7 @@ export default {
     },
     async createLocation(locationData) {
       try {
-        await locationService.createLocation(this$axios, location);
+        await locationService.createLocation(this.$axios, location);
         // Handle success
       } catch (error) {
         // Handle error
@@ -514,7 +514,16 @@ export default {
        console.log("---------------SEARCH", this.searchInput)
      }*/
   },
-  mounted() {
+  async mounted() {
+    console.log("----------------------------------------------------")
+    await this.$repository.weather.listLocations('location', 'list')
+      .then(
+        response => {
+          console.log("LISTING LOCATION", JSON.stringify(response))
+        }
+      )
+    console.log("----------------------------------------------------")
+
     this.$emit('updateVersion', 'WeatherQueryVueThree');
     console.log("mounted")
     //this.$store.commit('controller/SET_PAGE', 'one')
