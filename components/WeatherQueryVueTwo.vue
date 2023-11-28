@@ -230,6 +230,8 @@ export default {
     // *** awesome-object-action methods ***
 
     async editLocation(location) {
+      console.log('Respository:', this.$respository);
+      console.log('Weather repository:', this.$repository.weather);
       try {
         // Update the location using your API call
         await this.$respository.weather.editLocation('weather', 'location', 'edit', location.id, location);
