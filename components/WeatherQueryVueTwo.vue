@@ -229,28 +229,61 @@ export default {
   methods: {
     // *** awesome-object-action methods ***
 
-    async editLocation(location) {
+    // async editLocation(updatedLocationData) {
+    //   try {
+    //     // Update the location using your API call
+    //     const response = await this.$repository.weather.editLocation('location', 'edit', this.selectedLocation.id, updatedLocationData);
+    //
+    //     // Close the dialog and refresh the locations list
+    //     this.editDialog = false;
+    //     await this.fetchLocations();
+    //
+    //     // Show success message
+    //     this.$store.dispatch('alerts/showToast', {
+    //       content: 'Location updated successfully',
+    //       color: 'success',
+    //     });
+    //   } catch (error) {
+    //     console.error('Error updating location:', error);
+    //     this.$store.dispatch('alerts/showToast', {
+    //       content: 'Error updating location',
+    //       color: 'error',
+    //     });
+    //   }
+    // },
+    async editLocation(updatedLocationData) {
       try {
-        // Update the location using your API call
-        await locationService.updateLocation(this.$axios, location.id, location);
+        // Assuming the selectedLocation has an 'id' property
+        const endpoint = 'locations'; // or the appropriate endpoint for your API
+        const path = 'location'; // or the appropriate path
+        const action = 'edit'; // or the appropriate action
 
-        // Close the dialog and refresh the locations list
-        this.editDialog = false;
-        await this.fetchLocations();
+        const response = await this.$repository.weather.editLocation(endpoint, path, action, this.selectedLocation.id, updatedLocationData);
 
-        // Show success message
-        this.$store.dispatch('alerts/showToast', {
-          content: 'Location updated successfully',
-          color: 'success',
-        });
+        if (response.success) {
+          this.$store.dispatch('alerts/showToast', {
+            content: 'Location updated successfully',
+            color: 'success'
+          });
+        } else {
+          // Handle the case where the update is not successful
+          console.error('Error updating location');
+          this.$store.dispatch('alerts/showToast', {
+            content: 'Error updating location',
+            color: 'error',
+          });
+        }
       } catch (error) {
-        console.error('Error updating location:', error);
-        this.$store.dispatch('alerts/showToast', {
-          content: 'Error updating location',
-          color: 'error',
-        });
+          console.error('Error updating location:', error);
+           this.$store.dispatch('alerts/showToast', {
+             content: 'Error updating location',
+             color: 'error',
+           });
       }
     },
+
+
+
     async createLocation(locationData) {
       try {
         await locationService.createLocation(this.$axios, location);
@@ -456,20 +489,11 @@ export default {
 
 
   watch: {
-    /* location(newVal, oldVal) {
-       // Check if the location has changed
-       if (oldVal !== newVal) {
-         // Check if the location is in the locationsList and other fields are filled
-         if (this.locationsList.includes(newVal) && this.date && this.hour) {
-           // Trigger the weather query
-           //this.submitForm();
-         }else{
-           this.location = this.searchInput
-           //this.dialog = true
-         }
-       }
-       console.log("---------------SEARCH", this.searchInput)
-     }*/
+    location(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.selectedLocation = this.locationsList.find(loc => loc.name === newVal) || {};
+      }
+    },
   },
   async mounted() {
     console.log("----------------------------------------------------")
