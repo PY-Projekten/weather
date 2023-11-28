@@ -232,7 +232,7 @@ export default {
     async editLocation(location) {
       try {
         // Update the location using your API call
-        await locationService.updateLocation(this.$axios, location.id, location);
+        await this.$respository.weather.editLocation('weather', 'location', 'edit', location.id, location);
 
         // Close the dialog and refresh the locations list
         this.editDialog = false;

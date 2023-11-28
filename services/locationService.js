@@ -107,9 +107,10 @@ export class Endpoint {
   updateLocation($axios, id, locationData) {
     return $axios.put(`/locations/${id}/`, locationData);
   }
-  editLocation($axios, id, locationData) {
-    return $axios.put('/locations/', locationData);
+  editLocation(endpoint, path, action, id, locationData) {
+    return this.getData(this.client.patch(`/${endpoint}/${path}/${action}/${id}/`, locationData));
   }
+
   deleteLocation($axios, id) {
     return $axios.delete(`/locations/${id}/`);
   }
