@@ -20,18 +20,8 @@
         placeholder="Select or type a location"
         :rules="rules.location"
       >
-        <template v-slot:item="slotProps">
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>{{ slotProps.item.name }}</v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn icon @click="openEditDialog(slotProps.item)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </template>
+
+
         <template v-slot:no-data>
           Data does not yet exist in List.  If you have entered in a new Location, press ENTER
         </template>
@@ -150,31 +140,6 @@
       </v-dialog>
     </template>
 
-    <!-- Edit Location Dialog -->
-    <v-dialog v-model="editDialog" max-width="500px">
-      <v-card>
-        <v-card-title>Edit Location</v-card-title>
-        <v-card-text>
-          <v-text-field
-            label="Location Name"
-            v-model="selectedLocation.name"
-          ></v-text-field>
-          <v-text-field
-            label="Latitude"
-            v-model="selectedLocation.latitude"
-          ></v-text-field>
-          <v-text-field
-            label="Longitude"
-            v-model="selectedLocation.longitude"
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="editDialog = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="editLocation(selectedLocation)">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
   </div>
 </template>
@@ -188,7 +153,7 @@ import { locationService } from '@/services/locationService';
 
 
 export default {
-  name: 'WeatherQueryVueThree',
+  name: 'WeatherQueryVueTwo',
 
   components: {
     AwesomeObjectAction // Register the component
@@ -259,7 +224,7 @@ export default {
     },
   },
   currentVersion() {
-    return 'WeatherQueryVueThree';
+    return 'WeatherQueryVueTwo';
   },
   methods: {
     // *** awesome-object-action methods ***
@@ -304,14 +269,6 @@ export default {
     // }
     // // ** End of awesome-object-action method section **
 
-    // CRUD operations
-    openEditDialog(location) {
-      // Open the dialog for editing the location
-      // Set the selectedLocation to the location to be edited
-      this.selectedLocation = location;
-      // Open the dialog (assuming you have a dialog variable in your data)
-      this.editDialog = true;
-    },
 
     // End of CRUD Operations
 
@@ -331,7 +288,7 @@ export default {
     handleFocus() {
       // Logic to manage the input on focus
       // Clear any previous selection or error message to prepare for new input
-      this.selectedLocation = null;
+      this.selectedLocation = {};
       this.errorMessage = '';
     },
     noDataResult() {
@@ -524,7 +481,7 @@ export default {
       )
     console.log("----------------------------------------------------")
 
-    this.$emit('updateVersion', 'WeatherQueryVueThree');
+    this.$emit('updateVersion', 'WeatherQueryVueTwo');
     console.log("mounted")
     //this.$store.commit('controller/SET_PAGE', 'one')
     /*console.log("created")
