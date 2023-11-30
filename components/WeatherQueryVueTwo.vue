@@ -227,63 +227,85 @@ export default {
   methods: {
     // *** awesome-object-action methods ***
 
+
     // async editLocation(updatedLocationData) {
     //   try {
-    //     // Define the parameters for the editLocation method
-    //     const endpoint = 'weather'; // The base part of the URL
-    //     const path = 'location'; // The path in the URL
-    //     const action = 'edit'; // The specific action to be performed
-    //     const id = this.selectedLocation.id; // The unique identifier of the location
+    //     const endpoint = 'weather'; // Adjust as needed
+    //     const path = 'location'; // Adjust as needed
+    //     const action = 'edit'; // Adjust as needed
+    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
     //
     //     // the data being sent for update
     //     console.log('Sending updated location data:', updatedLocationData);
     //     // Call the editLocation method from the repository
+    //     console.log('Editing location with ID:', id);
     //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
+    //     console.log("Response from backend", response);
     //
-    //     if (response.success) {
-    //       // Success handling
+    //     // Check if the response indicates success
+    //     if (response.status === "success") {
+    //       // Display success message from backend
     //       this.$store.dispatch('alerts/showToast', {
-    //         content: 'Location updated successfully',
-    //         color: 'success'
+    //         content: response.message,
+    //         color: 'success',
     //       });
     //     } else {
-    //       // Error handling
-    //       console.error('Error updating location');
+    //       // Handle the case where the backend response indicates an error
+    //       console.error(response.message);
     //       this.$store.dispatch('alerts/showToast', {
-    //         content: 'Error updating location',
+    //         content: response.message,
     //         color: 'error',
     //       });
     //     }
+    //
     //   } catch (error) {
-    //     console.error('Error updating location:', error);
-    //     this.$store.dispatch('alerts/showToast', {
-    //       content: 'Error updating location',
-    //       color: 'error',
-    //     });
+    //     // Handle errors or other issues with the request
+    //     if (error.response) {
+    //       console.error('Error:', error.response.data.message);
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: error.response.data.message,
+    //         color: 'error',
+    //       });
+    //     } else if (error.request) {
+    //       console.error('Error: No response from the server');
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'No response from the server',
+    //         color: 'error',
+    //       });
+    //     } else {
+    //       console.error('Error:', error.message);
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'Error setting up the request',
+    //         color: 'error',
+    //       });
+    //     }
     //   }
     // },
     async editLocation(updatedLocationData) {
       try {
-        const endpoint = 'locations'; // Adjust as needed
+        const endpoint = 'weather'; // Adjust as needed
         const path = 'location'; // Adjust as needed
         const action = 'edit'; // Adjust as needed
         const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
 
+        // the data being sent for update
+        console.log('Sending updated location data:', updatedLocationData);
+        // Call the editLocation method from the repository
+        console.log('Editing location with ID:', id);
         const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
-        console.log("Response from backend", response);
+        console.log("Full Response from backend", response);
 
         // Check if the response indicates success
         if (response.status === "success") {
           // Display success message from backend
           this.$store.dispatch('alerts/showToast', {
-            content: response.message,
+            content: "Location updated successfully", // Custom success message
             color: 'success',
           });
         } else {
           // Handle the case where the backend response indicates an error
-          console.error(response.message);
           this.$store.dispatch('alerts/showToast', {
-            content: response.message,
+            content: "Error updating location", // Custom error message
             color: 'error',
           });
         }
@@ -293,24 +315,26 @@ export default {
         if (error.response) {
           console.error('Error:', error.response.data.message);
           this.$store.dispatch('alerts/showToast', {
-            content: error.response.data.message,
+            content: error.response.data.message, // Backend error message
             color: 'error',
           });
         } else if (error.request) {
           console.error('Error: No response from the server');
           this.$store.dispatch('alerts/showToast', {
-            content: 'No response from the server',
+            content: 'No response from the server', // Custom message for no response
             color: 'error',
           });
         } else {
           console.error('Error:', error.message);
           this.$store.dispatch('alerts/showToast', {
-            content: 'Error setting up the request',
+            content: 'Error setting up the request', // Custom message for request setup error
             color: 'error',
           });
         }
       }
     },
+
+
 
 
     async createLocation(locationData) {
