@@ -12,8 +12,6 @@
         ref="autocomplete"
         v-model="location"
         :items="locationsList"
-
-
         @focus="handleFocus"
         @keydown.enter="show_model($event)"
         @keydown.tab="show_model($event)"
