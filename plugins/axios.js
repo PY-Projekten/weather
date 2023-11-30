@@ -4,9 +4,9 @@ export default function ({app, store, $axios, redirect}) {
     $axios.defaults.headers = {
       "Content-Type": "application/json",
     }
-  
-  
-  
+
+
+
     $axios.onRequest(config => {
       console.log(config.url)
       /*if (store.state.authToken != null && store.state.authToken != "") {
@@ -15,4 +15,4 @@ export default function ({app, store, $axios, redirect}) {
   */
     })
   }
-  
+

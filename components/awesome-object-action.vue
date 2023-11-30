@@ -20,7 +20,7 @@
                 dense outlined
                 v-model="isEditing[attr.name]"
                 hide-details
-                :label="attr.desc"
+                :label="attr.label"
               />
             </v-col>
           </v-row>

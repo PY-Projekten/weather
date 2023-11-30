@@ -196,6 +196,7 @@ export default {
       date: new Date().toISOString().substr(0, 10), // Stores the selected date
       hour: '',
       locationsList: [], // populate this list from your API
+      locationSchema: {}, // populate this list from your API
       response_data: [], // populate this with the query results from your API
       errorMessage: '',
       errorDialog: false,
@@ -206,10 +207,7 @@ export default {
       editDialog: false,
       selectedLocation: {}, // Initialize as an empty object
       locationScheme: [
-        {name: 'name', desc: 'Location name'},
-        // ** Define other attributes as needed **
-        { name: 'latitude', desc: 'Latitude' },
-        { name: 'longitude', desc: 'Longitude' },
+
       ],
     };
   },
@@ -229,36 +227,91 @@ export default {
   methods: {
     // *** awesome-object-action methods ***
 
+    // async editLocation(updatedLocationData) {
+    //   try {
+    //     // Define the parameters for the editLocation method
+    //     const endpoint = 'weather'; // The base part of the URL
+    //     const path = 'location'; // The path in the URL
+    //     const action = 'edit'; // The specific action to be performed
+    //     const id = this.selectedLocation.id; // The unique identifier of the location
+    //
+    //     // the data being sent for update
+    //     console.log('Sending updated location data:', updatedLocationData);
+    //     // Call the editLocation method from the repository
+    //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
+    //
+    //     if (response.success) {
+    //       // Success handling
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'Location updated successfully',
+    //         color: 'success'
+    //       });
+    //     } else {
+    //       // Error handling
+    //       console.error('Error updating location');
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'Error updating location',
+    //         color: 'error',
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error('Error updating location:', error);
+    //     this.$store.dispatch('alerts/showToast', {
+    //       content: 'Error updating location',
+    //       color: 'error',
+    //     });
+    //   }
+    // },
     async editLocation(updatedLocationData) {
       try {
-        // Assuming the selectedLocation has an 'id' property
-        const endpoint = 'locations'; // or the appropriate endpoint for your API
-        const path = 'location'; // or the appropriate path
-        const action = 'edit'; // or the appropriate action
+        const endpoint = 'locations'; // Adjust as needed
+        const path = 'location'; // Adjust as needed
+        const action = 'edit'; // Adjust as needed
+        const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
 
-        const response = await this.$repository.weather.editLocation(endpoint, path, action, this.selectedLocation.id, updatedLocationData);
+        const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
+        console.log("Response from backend", response);
 
-        if (response.success) {
+        // Check if the response indicates success
+        if (response.status === "success") {
+          // Display success message from backend
           this.$store.dispatch('alerts/showToast', {
-            content: 'Location updated successfully',
-            color: 'success'
+            content: response.message,
+            color: 'success',
           });
         } else {
-          // Handle the case where the update is not successful
-          console.error('Error updating location');
+          // Handle the case where the backend response indicates an error
+          console.error(response.message);
           this.$store.dispatch('alerts/showToast', {
-            content: 'Error updating location',
+            content: response.message,
             color: 'error',
           });
         }
+
       } catch (error) {
-          console.error('Error updating location:', error);
-           this.$store.dispatch('alerts/showToast', {
-             content: 'Error updating location',
-             color: 'error',
-           });
+        // Handle errors or other issues with the request
+        if (error.response) {
+          console.error('Error:', error.response.data.message);
+          this.$store.dispatch('alerts/showToast', {
+            content: error.response.data.message,
+            color: 'error',
+          });
+        } else if (error.request) {
+          console.error('Error: No response from the server');
+          this.$store.dispatch('alerts/showToast', {
+            content: 'No response from the server',
+            color: 'error',
+          });
+        } else {
+          console.error('Error:', error.message);
+          this.$store.dispatch('alerts/showToast', {
+            content: 'Error setting up the request',
+            color: 'error',
+          });
+        }
       }
     },
+
 
     async createLocation(locationData) {
       try {
@@ -311,15 +364,25 @@ export default {
       console.log('Fetching new locations...');
     },
 
-    async fetchLocations() {
+    async fetchLocationSchema() {
       try {
-        const response = await this.$axios.get('/available_locations/');
-        this.locationsList = response.data.locations; // Assuming each location has id, name, latitude, longitude
+        const response = await this.$repository.weather.listEndpoint('location', 'schema');
+        if (response.success) delete response.success
+        console.log(JSON.stringify(response))
+        this.locationSchema = response; // Assuming each location has id, name, latitude, longitude
       } catch (error) {
         console.error('An error occurred while fetching the locations:', error);
       }
     },
-
+    async fetchLocations() {
+      try {
+        const response = await this.$repository.weather.listEndpoint('location', 'list');
+        if (response.success) delete response.success
+        this.locationsList = response; // Assuming each location has id, name, latitude, longitude
+      } catch (error) {
+        console.error('An error occurred while fetching the locations:', error);
+      }
+    },
     async submitForm() {
       console.log('submitForm is triggered');
       this.response_data = []
@@ -459,7 +522,6 @@ export default {
   },
   created() {
     this.set_test(1)
-    this.fetchLocations();
 
   },
 
@@ -472,8 +534,24 @@ export default {
     },
   },
   async mounted() {
+    await this.fetchLocations();
+    await this.fetchLocationSchema();
+
+    let keys = Object.keys(this.locationSchema)
+
+    for (let i in keys){
+      this.locationScheme.push(
+        {
+          'name': keys[i], 'label': keys[i].charAt(0).toUpperCase() + keys[i].slice(1, keys[i].length)
+        }
+      )
+    }
+
+    console.log("---------------------SCHEMA",JSON.stringify(this.locationSchema))
     console.log("----------------------------------------------------")
-    await this.$repository.weather.listLocations('location', 'list')
+    console.log("---------------------SCHEME",JSON.stringify(this.locationScheme))
+    console.log("----------------------------------------------------")
+    await this.$repository.weather.listEndpoint('location', 'list')
       .then(
         response => {
           console.log("LISTING LOCATION", JSON.stringify(response))
