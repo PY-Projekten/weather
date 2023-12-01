@@ -343,33 +343,41 @@ export default {
       }
     },
 
-    // ** older version that leverages getData functionalities through the method handleError **
-    // async deleteLocation(locationId) {
+    // async createLocation(newLocationData) {
     //   try {
-    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
+    //     const endpoint = 'weather'; // Corresponds to the first part of the URL
+    //     const path = 'location'; // Corresponds to the second part of the URL
     //
-    //     console.log('Deleting location with ID:', locationId);
-    //     const response = await this.$repository.weather.deleteLocation(locationId);
+    //     console.log('Creating new location:', newLocationData);
+    //     const response = await this.$repository.weather.createLocation(endpoint, path, newLocationData);
     //
-    //     // Use the standardized response from getData
-    //     if (response.success) {
-    //       // Display success message
+    //     console.log("Response from backend", response);
+    //     if (response.status === 201) { // Check for the 201 status code
     //       this.$store.dispatch('alerts/showToast', {
-    //         content: "Location deleted successfully",
+    //         content: response.data.message || "Location created successfully",
     //         color: 'success',
     //       });
+    //       // Optionally, refresh the list of locations here
     //     } else {
-    //       // Handle the case where the backend response indicates an error
+    //       // If the status code is not 201, it's treated as an error
     //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.message || "Error deleting location",
+    //         content: response.data.message || "Error creating location",
     //         color: 'error',
     //       });
     //     }
     //   } catch (error) {
-    //     // Handle errors or other issues with the request
-    //     this.handleError(error);
+    //     console.error('Error creating location:', error);
+    //     this.$store.dispatch('alerts/showToast', {
+    //       content: 'Error creating location',
+    //       color: 'error',
+    //     });
     //   }
     // },
+
+
+
+
+
 
 
     handleError(error) {
@@ -395,15 +403,6 @@ export default {
       }
     },
 
-
-    async createLocation(locationData) {
-      try {
-        await locationService.createLocation(this.$axios, location);
-        // Handle success
-      } catch (error) {
-        // Handle error
-      }
-    },
 
 
     // handleError(error) {
