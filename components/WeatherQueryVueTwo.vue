@@ -228,59 +228,6 @@ export default {
     // *** awesome-object-action methods ***
 
 
-    // async editLocation(updatedLocationData) {
-    //   try {
-    //     const endpoint = 'weather'; // Adjust as needed
-    //     const path = 'location'; // Adjust as needed
-    //     const action = 'edit'; // Adjust as needed
-    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
-    //
-    //     // the data being sent for update
-    //     console.log('Sending updated location data:', updatedLocationData);
-    //     // Call the editLocation method from the repository
-    //     console.log('Editing location with ID:', id);
-    //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
-    //     console.log("Response from backend", response);
-    //
-    //     // Check if the response indicates success
-    //     if (response.status === "success") {
-    //       // Display success message from backend
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.message,
-    //         color: 'success',
-    //       });
-    //     } else {
-    //       // Handle the case where the backend response indicates an error
-    //       console.error(response.message);
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.message,
-    //         color: 'error',
-    //       });
-    //     }
-    //
-    //   } catch (error) {
-    //     // Handle errors or other issues with the request
-    //     if (error.response) {
-    //       console.error('Error:', error.response.data.message);
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: error.response.data.message,
-    //         color: 'error',
-    //       });
-    //     } else if (error.request) {
-    //       console.error('Error: No response from the server');
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: 'No response from the server',
-    //         color: 'error',
-    //       });
-    //     } else {
-    //       console.error('Error:', error.message);
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: 'Error setting up the request',
-    //         color: 'error',
-    //       });
-    //     }
-    //   }
-    // },
     async editLocation(updatedLocationData) {
       try {
         const endpoint = 'weather'; // Adjust as needed
@@ -334,7 +281,60 @@ export default {
       }
     },
 
+    // In WeatherQueryVueTwo.vue
+    // async editLocation(updatedLocationData) {
+    //   try {
+    //     const endpoint = 'weather'; // Adjust as needed
+    //     const path = 'location'; // Adjust as needed
+    //     const action = 'edit'; // Adjust as needed
+    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
+    //     console.log('Editing location with ID:', id);
+    //
+    //     // Call the editLocation method from the repository
+    //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
+    //
+    //     // Use the standardized response from getData
+    //     if (response.success) {
+    //       // Display success message from backend
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: response.message || "Location updated successfully",
+    //         color: 'success',
+    //       });
+    //     } else {
+    //       // Handle the case where the backend response indicates an error
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: response.message || "Error updating location",
+    //         color: 'error',
+    //       });
+    //     }
+    //   } catch (error) {
+    //     // Handle errors or other issues with the request
+    //     this.handleError(error);
+    //   }
+    // },
 
+    handleError(error) {
+      // Error handling logic
+      if (error.response) {
+        console.error('Error:', error.response.data.message);
+        this.$store.dispatch('alerts/showToast', {
+          content: error.response.data.message, // Backend error message
+          color: 'error',
+        });
+      } else if (error.request) {
+        console.error('Error: No response from the server');
+        this.$store.dispatch('alerts/showToast', {
+          content: 'No response from the server', // Custom message for no response
+          color: 'error',
+        });
+      } else {
+        console.error('Error:', error.message);
+        this.$store.dispatch('alerts/showToast', {
+          content: 'Error setting up the request', // Custom message for request setup error
+          color: 'error',
+        });
+      }
+    },
 
 
     async createLocation(locationData) {
@@ -345,9 +345,40 @@ export default {
         // Handle error
       }
     },
-    async deleteLocation(location) {
 
+    async deleteLocation(locationId) {
+      try {
+        const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
+
+        console.log('Deleting location with ID:', locationId);
+        const response = await this.$repository.weather.deleteLocation(locationId);
+
+        // Use the standardized response from getData
+        if (response.success) {
+          // Display success message
+          this.$store.dispatch('alerts/showToast', {
+            content: "Location deleted successfully",
+            color: 'success',
+          });
+        } else {
+          // Handle the case where the backend response indicates an error
+          this.$store.dispatch('alerts/showToast', {
+            content: response.message || "Error deleting location",
+            color: 'error',
+          });
+        }
+      } catch (error) {
+        // Handle errors or other issues with the request
+        this.handleError(error);
+      }
     },
+
+    // handleError(error) {
+    //   // Error handling logic (similar to editLocation)
+    // },
+
+
+
 
     // async listLocations(location);
     // try {
