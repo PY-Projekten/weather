@@ -93,9 +93,18 @@ export class Endpoint {
     return this.getData(this.client.patch(`/${endpoint}/${path}/${action}/${id}/`, locationData));
   }
 
-  deleteLocation(id) {
-    return this.getData(this.client.delete(`/locations/${id}/`));
+  async deleteLocation(endpoint, path, id) {
+    try {
+      const response = await this.client.delete(`/${endpoint}/${path}/edit/${id}/`);
+      // Since a 204 response does not include a body, we return an object with the status code
+      return { status: response.status };
+    } catch (error) {
+      // Handle any errors that occur during the request
+      console.error('Error in deleteLocation:', error);
+      throw error;
+    }
   }
+
 
 }
 

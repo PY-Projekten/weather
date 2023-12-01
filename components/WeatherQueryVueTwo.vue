@@ -312,6 +312,65 @@ export default {
     //     this.handleError(error);
     //   }
     // },
+    async deleteLocation() {
+      try {
+        const endpoint = 'weather';
+        const path = 'location';
+        const id = this.selectedLocation.id;
+
+        console.log('Deleting location with ID:', id);
+        const response = await this.$repository.weather.deleteLocation(endpoint, path, id);
+
+        console.log("Response from backend", response);
+        if (response.status === 204) { // Check for the 204 status code
+          this.$store.dispatch('alerts/showToast', {
+            content: "Location deleted successfully",
+            color: 'success',
+          });
+        } else {
+          // If the status code is not 204, it's treated as an error
+          this.$store.dispatch('alerts/showToast', {
+            content: "Error deleting location",
+            color: 'error',
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.$store.dispatch('alerts/showToast', {
+          content: 'Error deleting location',
+          color: 'error',
+        });
+      }
+    },
+
+    // ** older version that leverages getData functionalities through the method handleError **
+    // async deleteLocation(locationId) {
+    //   try {
+    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
+    //
+    //     console.log('Deleting location with ID:', locationId);
+    //     const response = await this.$repository.weather.deleteLocation(locationId);
+    //
+    //     // Use the standardized response from getData
+    //     if (response.success) {
+    //       // Display success message
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: "Location deleted successfully",
+    //         color: 'success',
+    //       });
+    //     } else {
+    //       // Handle the case where the backend response indicates an error
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: response.message || "Error deleting location",
+    //         color: 'error',
+    //       });
+    //     }
+    //   } catch (error) {
+    //     // Handle errors or other issues with the request
+    //     this.handleError(error);
+    //   }
+    // },
+
 
     handleError(error) {
       // Error handling logic
@@ -346,32 +405,6 @@ export default {
       }
     },
 
-    async deleteLocation(locationId) {
-      try {
-        const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
-
-        console.log('Deleting location with ID:', locationId);
-        const response = await this.$repository.weather.deleteLocation(locationId);
-
-        // Use the standardized response from getData
-        if (response.success) {
-          // Display success message
-          this.$store.dispatch('alerts/showToast', {
-            content: "Location deleted successfully",
-            color: 'success',
-          });
-        } else {
-          // Handle the case where the backend response indicates an error
-          this.$store.dispatch('alerts/showToast', {
-            content: response.message || "Error deleting location",
-            color: 'error',
-          });
-        }
-      } catch (error) {
-        // Handle errors or other issues with the request
-        this.handleError(error);
-      }
-    },
 
     // handleError(error) {
     //   // Error handling logic (similar to editLocation)
