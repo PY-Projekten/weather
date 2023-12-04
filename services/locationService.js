@@ -82,8 +82,9 @@ export class Endpoint {
     return $axios.get(`/locations/${id}/`);
   }
 
+
   createLocation(endpoint, path, locationData) {
-    return this.getData(this.client.post(`/${endpoint}/${path}/`, locationData));
+    return this.getData(this.client.post(`/${endpoint}/${path}/list/`, locationData));
   }
 
 

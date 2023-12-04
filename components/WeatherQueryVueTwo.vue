@@ -178,8 +178,6 @@ export default {
           v => v === null || v === undefined || v === '' || /^[a-zA-Z\s,]+$/.test(v) || 'Location must only contain letters, spaces, and commas',
           v => v === null || v === undefined || v === '' || v.length <= 20 || 'Location must be less than 20 characters',
           // v => v === null || v === undefined || v === '' || !/[,\s]{2,}/.test(v) || 'Location cannot have consecutive commas or spaces',
-
-
         ],
         date: [
           v => !!v || 'Date is required',
@@ -230,10 +228,10 @@ export default {
 
     async editLocation(updatedLocationData) {
       try {
-        const endpoint = 'weather'; // Adjust as needed
-        const path = 'location'; // Adjust as needed
-        const action = 'edit'; // Adjust as needed
-        const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
+        const endpoint = 'weather';
+        const path = 'location';
+        const action = 'edit';
+        const id = this.selectedLocation.id;
 
         // the data being sent for update
         console.log('Sending updated location data:', updatedLocationData);
@@ -343,41 +341,40 @@ export default {
       }
     },
 
-    // async createLocation(newLocationData) {
-    //   try {
-    //     const endpoint = 'weather'; // Corresponds to the first part of the URL
-    //     const path = 'location'; // Corresponds to the second part of the URL
-    //
-    //     console.log('Creating new location:', newLocationData);
-    //     const response = await this.$repository.weather.createLocation(endpoint, path, newLocationData);
-    //
-    //     console.log("Response from backend", response);
-    //     if (response.status === 201) { // Check for the 201 status code
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.data.message || "Location created successfully",
-    //         color: 'success',
-    //       });
-    //       // Optionally, refresh the list of locations here
-    //     } else {
-    //       // If the status code is not 201, it's treated as an error
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.data.message || "Error creating location",
-    //         color: 'error',
-    //       });
-    //     }
-    //   } catch (error) {
-    //     console.error('Error creating location:', error);
-    //     this.$store.dispatch('alerts/showToast', {
-    //       content: 'Error creating location',
-    //       color: 'error',
-    //     });
-    //   }
-    // },
+    async createLocation(locationData) {
+      try {
+        const endpoint = 'weather'; // Corresponds to the first part of the URL
+        const path = 'location'; // Corresponds to the second part of the URL
 
+        console.log('Creating new location:', locationData);
+        const response = await this.$repository.weather.createLocation(endpoint, path, locationData);
 
-
-
-
+        console.log("Response from backend", response);
+        if (response.status === "success") {
+        // if (response.status === 201) { // Check for the 201 status code
+          this.$store.dispatch('alerts/showToast', {
+            content: response.data.message || "Location created successfully",
+            color: 'success',
+          });
+          // Optionally, refresh the list of locations here
+        } else {
+          // If the status code is not 201, it's treated as an error
+          this.$store.dispatch('alerts/showToast', {
+            content: response.data.message || "Error creating location",
+            color: 'error',
+          });
+        }
+      } catch (error) {
+        console.error('Error creating location:', error);
+        if(error.response) {
+          console.log('Error response data:', error.response.data)
+        }
+        this.$store.dispatch('alerts/showToast', {
+          content: 'Error creating location',
+          color: 'error',
+        });
+      }
+    },
 
 
     handleError(error) {
@@ -464,8 +461,9 @@ export default {
     async fetchLocations() {
       try {
         const response = await this.$repository.weather.listEndpoint('location', 'list');
+        console.log('Response from listEndpoint:', response);
         if (response.success) delete response.success
-        this.locationsList = response; // Assuming each location has id, name, latitude, longitude
+        this.locationsList = response.data; // Assuming each location has id, name, latitude, longitude
       } catch (error) {
         console.error('An error occurred while fetching the locations:', error);
       }
