@@ -186,6 +186,16 @@ export default {
         hour: [
           v => v === '' || /^(\\d{2}:\\d{2}(?::\\d{2})?)$/.test(v) || 'Hour must be in "hh:mm" or "hh:mm:ss" format',
         ],
+        latitude: [
+          v => !!v || 'Latitude is required',
+          v => !isNaN(parseFloat(v)) && isFinite(v) || 'Latitude must be a valid number',
+          v => v >= -90 && v <= 90 || 'Latitude must be between -90 and 90',
+        ],
+        longitude: [
+          v => !!v || 'Longitude is required',
+          v => !isNaN(parseFloat(v)) && isFinite(v) || 'Longitude must be a valid number',
+          v => v >= -180 && v <= 180 || 'Longitude must be between -180 and 180',
+        ],
       },
       dialog: false,
       searchInput: '',
@@ -247,6 +257,7 @@ export default {
             content: "Location updated successfully", // Custom success message
             color: 'success',
           });
+          this.fetchLocations();
         } else {
           // Handle the case where the backend response indicates an error
           this.$store.dispatch('alerts/showToast', {
@@ -279,37 +290,6 @@ export default {
       }
     },
 
-    // In WeatherQueryVueTwo.vue
-    // async editLocation(updatedLocationData) {
-    //   try {
-    //     const endpoint = 'weather'; // Adjust as needed
-    //     const path = 'location'; // Adjust as needed
-    //     const action = 'edit'; // Adjust as needed
-    //     const id = this.selectedLocation.id; // Assuming selectedLocation has an 'id' property
-    //     console.log('Editing location with ID:', id);
-    //
-    //     // Call the editLocation method from the repository
-    //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
-    //
-    //     // Use the standardized response from getData
-    //     if (response.success) {
-    //       // Display success message from backend
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.message || "Location updated successfully",
-    //         color: 'success',
-    //       });
-    //     } else {
-    //       // Handle the case where the backend response indicates an error
-    //       this.$store.dispatch('alerts/showToast', {
-    //         content: response.message || "Error updating location",
-    //         color: 'error',
-    //       });
-    //     }
-    //   } catch (error) {
-    //     // Handle errors or other issues with the request
-    //     this.handleError(error);
-    //   }
-    // },
     async deleteLocation() {
       try {
         const endpoint = 'weather';
@@ -320,11 +300,12 @@ export default {
         const response = await this.$repository.weather.deleteLocation(endpoint, path, id);
 
         console.log("Response from backend", response);
-        if (response.status === 204) { // Check for the 204 status code
+        if (response.status === 200) { // Check for the 204 status code
           this.$store.dispatch('alerts/showToast', {
             content: "Location deleted successfully",
             color: 'success',
           });
+          this.fetchLocations();
         } else {
           // If the status code is not 204, it's treated as an error
           this.$store.dispatch('alerts/showToast', {
@@ -356,7 +337,7 @@ export default {
             content: response.data.message || "Location created successfully",
             color: 'success',
           });
-          // Optionally, refresh the list of locations here
+          this.fetchLocations();
         } else {
           // If the status code is not 201, it's treated as an error
           this.$store.dispatch('alerts/showToast', {
@@ -400,20 +381,6 @@ export default {
       }
     },
 
-
-
-    // handleError(error) {
-    //   // Error handling logic (similar to editLocation)
-    // },
-
-
-
-
-    // async listLocations(location);
-    // try {
-    //   await locationService.listLocations(this$axios, location)
-    // }
-    // // ** End of awesome-object-action method section **
 
 
     // End of CRUD Operations
@@ -500,6 +467,7 @@ export default {
         if (response.data.status === "success") {
           // Update the data in the Vue component with the received data
           this.response_data = response.data.data.weather;
+          this.fetchLocations();
         } else {
           // Handle the case where the backend response indicates an error
           this.errorMessage = response.data.message; // Display the error message from the backend
@@ -604,9 +572,13 @@ export default {
       this.date = newDate;
       this.formattedDate = this.formatDate(newDate);
     },
+    resetSelectedLocation() {
+      this.selectedLocation = {}; // Reset to initial state
+    }
   },
   created() {
     this.set_test(1)
+    this.$on('resetSelectedLocation', this.resetSelectedLocation);
 
   },
 

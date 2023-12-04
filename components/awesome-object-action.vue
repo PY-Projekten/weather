@@ -37,7 +37,7 @@
           </v-row>
           <v-row v-else style="width: 100%">
             <v-col cols="12" style="width: 100%">
-              Möchten Sie dieses Objekt wirklich löschen?
+              Möchten Sie den Standort "{{item.name}}" Objekt wirklich löschen?
             </v-col>
           </v-row>
           <v-card-actions>
@@ -110,6 +110,7 @@ export default {
     },
     clickedCreate() {
       this.state = "create"
+      this.$emit('resetSelectedLocation'); // Emit an event to reset selectedLocation
       if (this.template) {
         Object.assign(this.isEditing, this.template)
       } else {
