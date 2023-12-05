@@ -37,6 +37,8 @@
       :del="deleteLocation"
       :item="selectedLocation"
       :scheme="locationScheme"
+      :validate-fields="validateLocationFields"
+      @validationFailed="handleValidationFailure"
     />
 
     <!-- Date Format Selector -->
@@ -498,6 +500,7 @@ export default {
       console.log('submitForm - After Submission:', this.searchInput);
     },
 
+    // ** For submit Form **
     validateForm() {
       const isLocationValid = this.rules.location.every(rule => rule(this.location));
       const isDateValid = this.rules.date.every(rule => rule(this.date));
@@ -505,6 +508,21 @@ export default {
       return isLocationValid && isDateValid && isHourValid;
     },
 
+    // ** For the awesome-object-action **
+    validateLocationFields() {
+      const isLocationValid = this.rules.location.every(rule => rule(this.selectedLocation.name));
+      const isLatitudeValid = this.rules.latitude.every(rule => rule(this.selectedLocation.latitude));
+      const isLongitudeValid = this.rules.longitude.every(rule => rule(this.selectedLocation.longitude));
+
+      return isLocationValid && isLatitudeValid && isLongitudeValid;
+    },
+
+    handleValidationFailure(errorMessage) {
+      this.$store.dispatch('alerts/showToast', {
+        content: errorMessage,
+        color: 'error',
+      });
+    },
 
     showPopup(message) {
       // Implement the logic to show a popup with the given message

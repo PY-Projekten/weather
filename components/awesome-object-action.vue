@@ -92,7 +92,11 @@ export default {
     // List of Dictionaries with names and descriptions of attribute for the object
     scheme: {
       type: Array,
-      default: []
+      default: [],
+    },
+    validateFields: {
+      type: Function,
+      default: null
     }
   },
   data() {
@@ -104,11 +108,21 @@ export default {
   },
   methods: {
     clickedEdit() {
+      if (this.validateFields && !this.validateFields()) {
+        console.error("Validation failed");
+        this.$emit('validationFailed', 'Error creating location')// Optionally handle the validation failure, e.g., emit an event or set an error message
+        return;
+      }
       this.state = "edit"
       Object.assign(this.isEditing, this.item)
       this.dialog = true
     },
     clickedCreate() {
+      if (this.validateFields && !this.validateFields()) {
+        console.error("Validation failed");
+        this.$emit('validationFailed', 'Error editing location');
+        return;
+      }
       this.state = "create"
       this.$emit('resetSelectedLocation'); // Emit an event to reset selectedLocation
       if (this.template) {
@@ -122,9 +136,24 @@ export default {
       this.state = "delete"
       this.dialog = true
     },
+
+
   }
 }
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -161,17 +190,19 @@ export default {
 <!--        </v-card-title>-->
 <!--        <v-card elevation="0" style="padding: 1em">-->
 <!--          <v-row v-if="(state === 'edit' || state === 'create') && scheme.length !== 0">-->
-<!--            <v-col v-for="attr in scheme">-->
+<!--            <v-col v-for="(attr, index) in scheme" :key="attr.name">-->
+<!--              &lt;!&ndash;            <v-col v-for="attr in scheme">&ndash;&gt;-->
 <!--              <v-text-field-->
 <!--                dense outlined-->
 <!--                v-model="isEditing[attr.name]"-->
 <!--                hide-details-->
-<!--                :label="attr.desc"-->
+<!--                :label="attr.label"-->
 <!--              />-->
 <!--            </v-col>-->
 <!--          </v-row>-->
 <!--          <v-row v-else-if="state === 'edit' || state === 'create'">-->
-<!--            <v-col v-for="attr in Object.keys(isEditing)">-->
+<!--            &lt;!&ndash;            <v-col v-for="attr in Object.keys(isEditing)">&ndash;&gt;-->
+<!--            <v-col v-for="(attr, index) in Object.keys(isEditing)" :key="attr">-->
 <!--              <v-text-field-->
 <!--                dense outlined-->
 <!--                v-model="isEditing[attr]"-->
@@ -182,7 +213,7 @@ export default {
 <!--          </v-row>-->
 <!--          <v-row v-else style="width: 100%">-->
 <!--            <v-col cols="12" style="width: 100%">-->
-<!--              Möchten Sie dieses Objekt wirklich löschen?-->
+<!--              Möchten Sie den Standort "{{item.name}}" Objekt wirklich löschen?-->
 <!--            </v-col>-->
 <!--          </v-row>-->
 <!--          <v-card-actions>-->
@@ -255,6 +286,7 @@ export default {
 <!--    },-->
 <!--    clickedCreate() {-->
 <!--      this.state = "create"-->
+<!--      this.$emit('resetSelectedLocation'); // Emit an event to reset selectedLocation-->
 <!--      if (this.template) {-->
 <!--        Object.assign(this.isEditing, this.template)-->
 <!--      } else {-->
@@ -269,3 +301,34 @@ export default {
 <!--  }-->
 <!--}-->
 <!--</script>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
