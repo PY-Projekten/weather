@@ -49,7 +49,7 @@
               <v-icon v-if="state === 'delete'" @click="del(item)">
                 mdi-delete
               </v-icon>
-              <v-icon v-else @click="state === 'edit' ? edit(isEditing) : create(isEditing)">
+              <v-icon v-else @click="state === 'edit' ? submitEdit : submitCreate">
                 mdi-floppy
               </v-icon>
             </v-btn>
@@ -108,21 +108,20 @@ export default {
   },
   methods: {
     clickedEdit() {
-      if (this.validateFields && !this.validateFields()) {
-        console.error("Validation failed");
-        this.$emit('validationFailed', 'Error creating location')// Optionally handle the validation failure, e.g., emit an event or set an error message
-        return;
-      }
       this.state = "edit"
       Object.assign(this.isEditing, this.item)
       this.dialog = true
     },
-    clickedCreate() {
+    submitEdit() {
       if (this.validateFields && !this.validateFields()) {
         console.error("Validation failed");
         this.$emit('validationFailed', 'Error editing location');
         return;
       }
+      this.edit(this.isEditing); // Perform the edit operation here
+      this.dialog = false; // Close the dialog
+    },
+    clickedCreate() {
       this.state = "create"
       this.$emit('resetSelectedLocation'); // Emit an event to reset selectedLocation
       if (this.template) {
@@ -131,6 +130,15 @@ export default {
         Object.assign(this.isEditing, this.item)
       }
       this.dialog = true
+    },
+    submitCreate() {
+      if (this.validateFields && !this.validateFields()) {
+        console.error("Validation failed");
+        this.$emit('validationFailed', 'Error creating location');
+        return;
+      }
+      this.create(this.isEditing); // Perform the create operation
+      this.dialog = false; // Close the dialog
     },
     clickedDelete() {
       this.state = "delete"
