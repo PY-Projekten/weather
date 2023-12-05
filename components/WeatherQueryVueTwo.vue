@@ -238,7 +238,75 @@ export default {
     // *** awesome-object-action methods ***
 
 
+    // async editLocation(updatedLocationData) {
+    //   try {
+    //     const endpoint = 'weather';
+    //     const path = 'location';
+    //     const action = 'edit';
+    //     const id = this.selectedLocation.id;
+    //
+    //     // the data being sent for update
+    //     console.log('Sending updated location data:', updatedLocationData);
+    //     // Call the editLocation method from the repository
+    //     console.log('Editing location with ID:', id);
+    //     const response = await this.$repository.weather.editLocation(endpoint, path, action, id, updatedLocationData);
+    //     console.log("Full Response from backend", response);
+    //
+    //     // Check if the response indicates success
+    //     if (response.status === "success") {
+    //       // Display success message from backend
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: "Location updated successfully", // Custom success message
+    //         color: 'success',
+    //       });
+    //       this.fetchLocations();
+    //     } else {
+    //       // Handle the case where the backend response indicates an error
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: "Error updating location", // Custom error message
+    //         color: 'error',
+    //       });
+    //     }
+    //
+    //   } catch (error) {
+    //     // Handle errors or other issues with the request
+    //     if (error.response) {
+    //       console.error('Error:', error.response.data.message);
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: error.response.data.message, // Backend error message
+    //         color: 'error',
+    //       });
+    //     } else if (error.request) {
+    //       console.error('Error: No response from the server');
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'No response from the server', // Custom message for no response
+    //         color: 'error',
+    //       });
+    //     } else {
+    //       console.error('Error:', error.message);
+    //       this.$store.dispatch('alerts/showToast', {
+    //         content: 'Error setting up the request', // Custom message for request setup error
+    //         color: 'error',
+    //       });
+    //     }
+    //   }
+    // },
     async editLocation(updatedLocationData) {
+      console.log("Updated Location Data:", updatedLocationData);
+      this.selectedLocation = updatedLocationData;
+
+      console.log("Selected Location for Validation:", this.selectedLocation.name);
+      const validationError = this.validateLocationFields();
+      console.log("Validation Error:", validationError);
+
+      if (validationError) {
+        this.$store.dispatch('alerts/showToast', {
+          content: validationError,
+          color: 'error',
+        });
+        return;
+      }
+
       try {
         const endpoint = 'weather';
         const path = 'location';
@@ -512,12 +580,43 @@ export default {
 
 
     validateLocationFields() {
-      const isLocationValid = this.rules.location.every(rule => rule(this.selectedLocation.name));
-      const isLatitudeValid = this.rules.latitude.every(rule => rule(this.selectedLocation.latitude));
-      const isLongitudeValid = this.rules.longitude.every(rule => rule(this.selectedLocation.longitude));
+      console.log("Validating:", this.selectedLocation);
 
-      return isLocationValid && isLatitudeValid && isLongitudeValid;
+
+      for (const rule of this.rules.location) {
+        const isValid = rule(this.selectedLocation.name);
+        console.log(`Location Rule for '${this.selectedLocation.name}': ${isValid}`);
+        if (!isValid) {
+          console.log("Location validation failed:", rule(this.selectedLocation.name));
+          return rule(this.selectedLocation.name); // Return the error message
+        }
+      }
+      // Validate 'location' field
+      // const locationValidation = this.rules.location.find(rule => !rule(this.selectedLocation.name));
+      // if (locationValidation) {
+      //   console.log("Location validation failed:", locationValidation(this.selectedLocation.name));
+      //   return locationValidation(this.selectedLocation.name);
+      // }
+
+      // Validate 'latitude' field
+      const latitudeValidation = this.rules.latitude.find(rule => !rule(this.selectedLocation.latitude));
+      if (latitudeValidation) {
+        return latitudeValidation(this.selectedLocation.latitude);
+      }
+      // const latitudeValidation = this.rules.latitude.find(rule => !rule(this.selectedLocation.latitude));
+      // if (latitudeValidation) return latitudeValidation(this.selectedLocation.latitude);
+
+      // Validate 'longitude' field
+      const longitudeValidation = this.rules.longitude.find(rule => !rule(this.selectedLocation.longitude));
+      if (longitudeValidation) {
+        return longitudeValidation(this.selectedLocation.longitude);
+      }
+      // const longitudeValidation = this.rules.longitude.find(rule => !rule(this.selectedLocation.longitude));
+      // if (longitudeValidation) return longitudeValidation(this.selectedLocation.longitude);
+
+      return null; // All validations passed
     },
+
     //
     // handleValidationFailure(errorMessage) {
     //   this.$store.dispatch('alerts/showToast', {
@@ -592,13 +691,13 @@ export default {
       this.date = newDate;
       this.formattedDate = this.formatDate(newDate);
     },
-    resetSelectedLocation() {
-      this.selectedLocation = {}; // Reset to initial state
-    }
+    // resetSelectedLocation() {
+    //   this.selectedLocation = {}; // Reset to initial state
+    // }
   },
   created() {
     this.set_test(1)
-    this.$on('resetSelectedLocation', this.resetSelectedLocation);
+    // this.$on('resetSelectedLocation', this.resetSelectedLocation);
 
   },
 
