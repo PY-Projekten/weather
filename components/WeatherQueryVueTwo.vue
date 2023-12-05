@@ -37,9 +37,9 @@
       :del="deleteLocation"
       :item="selectedLocation"
       :scheme="locationScheme"
-      :validate-fields="validateLocationFields"
-      @validationFailed="handleValidationFailure"
     />
+    <!--      :validate-fields="validateLocationFields"-->
+    <!--      @validationFailed="handleValidationFailure"-->
 
     <!-- Date Format Selector -->
     <v-select
@@ -509,6 +509,8 @@ export default {
     },
 
     // ** For the awesome-object-action **
+
+
     validateLocationFields() {
       const isLocationValid = this.rules.location.every(rule => rule(this.selectedLocation.name));
       const isLatitudeValid = this.rules.latitude.every(rule => rule(this.selectedLocation.latitude));
@@ -516,13 +518,13 @@ export default {
 
       return isLocationValid && isLatitudeValid && isLongitudeValid;
     },
-
-    handleValidationFailure(errorMessage) {
-      this.$store.dispatch('alerts/showToast', {
-        content: errorMessage,
-        color: 'error',
-      });
-    },
+    //
+    // handleValidationFailure(errorMessage) {
+    //   this.$store.dispatch('alerts/showToast', {
+    //     content: errorMessage,
+    //     color: 'error',
+    //   });
+    // },
 
     showPopup(message) {
       // Implement the logic to show a popup with the given message

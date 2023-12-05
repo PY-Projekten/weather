@@ -49,7 +49,7 @@
               <v-icon v-if="state === 'delete'" @click="del(item)">
                 mdi-delete
               </v-icon>
-              <v-icon v-else @click="state === 'edit' ? submitEdit : submitCreate">
+              <v-icon v-else @click="state === 'edit' ? clickedEdit() : clickedCreate()">
                 mdi-floppy
               </v-icon>
             </v-btn>
@@ -94,10 +94,10 @@ export default {
       type: Array,
       default: [],
     },
-    validateFields: {
-      type: Function,
-      default: null
-    }
+    // validateFields: {
+    //   type: Function,
+    //   default: null
+    // }
   },
   data() {
     return {
@@ -112,15 +112,15 @@ export default {
       Object.assign(this.isEditing, this.item)
       this.dialog = true
     },
-    submitEdit() {
-      if (this.validateFields && !this.validateFields()) {
-        console.error("Validation failed");
-        this.$emit('validationFailed', 'Error editing location');
-        return;
-      }
-      this.edit(this.isEditing); // Perform the edit operation here
-      this.dialog = false; // Close the dialog
-    },
+    // submitEdit() {
+    //   if (this.validateFields && !this.validateFields()) {
+    //     console.error("Validation failed");
+    //     this.$emit('validationFailed', 'Error editing location');
+    //     return;
+    //   }
+    //   this.edit(this.isEditing); // Perform the edit operation here
+    //   this.dialog = false; // Close the dialog
+    // },
     clickedCreate() {
       this.state = "create"
       this.$emit('resetSelectedLocation'); // Emit an event to reset selectedLocation
@@ -131,15 +131,15 @@ export default {
       }
       this.dialog = true
     },
-    submitCreate() {
-      if (this.validateFields && !this.validateFields()) {
-        console.error("Validation failed");
-        this.$emit('validationFailed', 'Error creating location');
-        return;
-      }
-      this.create(this.isEditing); // Perform the create operation
-      this.dialog = false; // Close the dialog
-    },
+    // submitCreate() {
+    //   if (this.validateFields && !this.validateFields()) {
+    //     console.error("Validation failed");
+    //     this.$emit('validationFailed', 'Error creating location');
+    //     return;
+    //   }
+    //   this.create(this.isEditing); // Perform the create operation
+    //   this.dialog = false; // Close the dialog
+    // },
     clickedDelete() {
       this.state = "delete"
       this.dialog = true
